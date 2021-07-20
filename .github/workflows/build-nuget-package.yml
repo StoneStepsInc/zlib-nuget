@@ -35,17 +35,19 @@ jobs:
     - name: Extract zLib
       run: |
         7z x ${{ env.ZLIB_FNAME }}
-        cd zlib-${{ env.PKG_VER }}
 
     - name: Patch Makefile.msc
+      working-directory: zlib-${{ env.PKG_VER }}
       run: patch --input patches\Makefile.msc.patch win32\Makefile.msc
 
     - name: Copy license
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         mkdir ..\nuget\licenses
         copy zlib.h ..\nuget\licenses\zlib.h.txt
 
     - name: Copy header files
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         mkdir ..\nuget\build\native\include
         copy *.h ..\nuget\build\native\include\
@@ -54,12 +56,14 @@ jobs:
       run: call "${{ env.VCVARSALL }}" x86
 
     - name: Build x86/Debug
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
         call ..\devops\copy-config Win32 Debug
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
 
     - name: Build x86/Release
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
         call ..\devops\copy-config Win32 Release
@@ -69,16 +73,19 @@ jobs:
       run: call "${{ env.VCVARSALL }}" x64
 
     - name: Build x64/Debug
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
         call ..\devops\copy-config Win32 Debug
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
 
     - name: Build x64/Release
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
         call ..\devops\copy-config Win32 Release
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
+
     - name: Make Nuget package
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
