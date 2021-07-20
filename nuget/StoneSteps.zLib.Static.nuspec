@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>StoneSteps.zLib.Static</id>
+    <version>1.2.11</version>
+    <authors>Jean-loup Gailly (contents), Mark Adler (contents)</authors>
+    <owners>Stone Steps (package)</owners>
+    <license type="file">licenses\zlib.h.txt</license>
+    <projectUrl>https://zlib.net/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A zLib compression library for MSVC projects.</description>
+    <releaseNotes>
+This package contains zLib header files and static libraries
+built with VS2019 for Win32 and x64 platforms using zLib's
+build scripts in win32/Makefile.msc.
+
+Note that Debug and Release configurations contain the same
+libraries and debug symbols because zLib does not generate
+separate debug configurations.
+
+The zLib static library is explicitly referenced within this
+package and will appear within the solution folder tree after
+the package is installed. The solution may need to be reloaded
+to make the library file visible. This library may be moved
+into any solution folder, where it will remain when the
+solution is reloaded.
+
+Note that zLib library path is valid only for build configurations
+named Debug and Release and will not be found for any other
+configuration name. Do not install this package for projects with
+configurations other than Debug and Release.
+    </releaseNotes>
+    <copyright>Jean-loup Gailly, Mark Adler</copyright>
+    <tags>zLib, native, static library, library</tags>
+  </metadata>
+  <files>
+   <file src="README.txt" target=""/>
+   <file src="licenses\zlib.h.txt" target="licenses\zlib.h.txt"/>
+   <file src="build\**\*" target="build"/>
+  </files>
+</package>

@@ -1,0 +1,12 @@
+29c29
+< CFLAGS  = -nologo -MD -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
+---
+> CFLAGS  = -nologo -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
+34a35,41
+> 
+> # use debug version of MSVC CRT for debug builds
+> !IFDEF DEBUG
+> CFLAGS = $(CFLAGS) /MDd
+> !ELSE
+> CFLAGS = $(CFLAGS) /MD /DNDEBUG
+> !ENDIF
