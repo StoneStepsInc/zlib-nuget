@@ -6,7 +6,7 @@ env:
 
   ZLIB_FNAME: zlib1211.zip
   #ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-  ZLIB_SHA256: d7510a8ee1918b7d0cad197a089c0a2cd4d6df05fee22389f67f115e738b178d
+  ZLIB_SHA256: d7510a8ee1918b7d0cad197a089c0a2cd4d6df05fee22389f67f115e738b178d-
 
   VCVARSALL: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall'
 
