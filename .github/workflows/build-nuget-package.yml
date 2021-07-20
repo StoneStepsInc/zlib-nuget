@@ -51,12 +51,10 @@ jobs:
         mkdir ..\nuget\build\native\include
         copy *.h ..\nuget\build\native\include\
 
-    - name: VCVARSALL x86
-      run: call "${{ env.VCVARSALL }}" x86
-
     - name: Build x86/Debug
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
+        call "${{ env.VCVARSALL }}" x86
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
         call ..\devops\copy-config Win32 Debug
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
@@ -64,16 +62,15 @@ jobs:
     - name: Build x86/Release
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
+        call "${{ env.VCVARSALL }}" x86
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
         call ..\devops\copy-config Win32 Release
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
 
-    - name: VCVARSALL x64
-      run: call "${{ env.VCVARSALL }}" x64
-
     - name: Build x64/Debug
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
+        call "${{ env.VCVARSALL }}" x64
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
         call ..\devops\copy-config Win32 Debug
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
@@ -81,6 +78,7 @@ jobs:
     - name: Build x64/Release
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
+        call "${{ env.VCVARSALL }}" x64
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
         call ..\devops\copy-config Win32 Release
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
