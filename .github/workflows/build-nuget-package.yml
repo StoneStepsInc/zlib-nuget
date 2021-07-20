@@ -12,6 +12,7 @@ env:
 
 defaults:
   run:
+    shell: cmd
 
 # manual and REST API runs only
 on: workflow_dispatch
