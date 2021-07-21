@@ -37,7 +37,7 @@ jobs:
         7z x ${{ env.ZLIB_FNAME }}
 
     - name: Patch Makefile.msc
-      run: patch --input patches\Makefile.msc.patch zlib-${{ env.PKG_VER }}\win32\Makefile.msc
+      run: patch --unified --input patches\Makefile.msc.patch zlib-${{ env.PKG_VER }}\win32\Makefile.msc
 
     - name: Copy license
       working-directory: zlib-${{ env.PKG_VER }}

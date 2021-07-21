@@ -1,12 +1,24 @@
-29c29
-< CFLAGS  = -nologo -MD -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
----
-> CFLAGS  = -nologo -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
-34a35,41
-> 
-> # use debug version of MSVC CRT for debug builds
-> !IFDEF DEBUG
-> CFLAGS = $(CFLAGS) /MDd
-> !ELSE
-> CFLAGS = $(CFLAGS) /MD /DNDEBUG
-> !ENDIF
+--- "a/zlib-1.2.11/win32/Makefile.msc"	2017-01-15 08:07:08.000000000 -0500
++++ "b/zlib-1.2.11/win32/Makefile.msc"	2021-07-20 19:45:24.273985900 -0400
+@@ -26,13 +26,20 @@
+ LD = link
+ AR = lib
+ RC = rc
+-CFLAGS  = -nologo -MD -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
++CFLAGS  = -nologo -W3 -O2 -Oy- -Zi -Fd"zlib" $(LOC)
+ WFLAGS  = -D_CRT_SECURE_NO_DEPRECATE -D_CRT_NONSTDC_NO_DEPRECATE
+ ASFLAGS = -coff -Zi $(LOC)
+ LDFLAGS = -nologo -debug -incremental:no -opt:ref
+ ARFLAGS = -nologo
+ RCFLAGS = /dWIN32 /r
+ 
++# use debug version of MSVC CRT for debug builds
++!IFDEF DEBUG
++CFLAGS = $(CFLAGS) /MDd
++!ELSE
++CFLAGS = $(CFLAGS) /MD /DNDEBUG
++!ENDIF
++
+ OBJS = adler32.obj compress.obj crc32.obj deflate.obj gzclose.obj gzlib.obj gzread.obj \
+        gzwrite.obj infback.obj inflate.obj inftrees.obj inffast.obj trees.obj uncompr.obj zutil.obj
+ OBJA =
