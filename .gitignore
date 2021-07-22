@@ -1,0 +1,19 @@
+# downloaded zLib package file
+/zlib*.zip
+
+# extracted zLib source
+/zlib-*/
+
+# collected zLib build artifacts
+/nuget/build/native/include/
+/nuget/build/native/lib/
+/nuget/licenses/
+
+# locally-built Nuget package
+/StoneSteps.zlib.Static.*.nupkg
+
+# sample app for testing the Nuget package
+/sample-zpipe/.vs/
+/sample-zpipe/packages/
+/sample-zpipe/Win32/
+/sample-zpipe/x64/
