@@ -99,6 +99,7 @@ jobs:
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
+        call "${{ env.VCVARSALL }}" %VCVARS%
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG% clean
 
     - name: Upload zLib ${{ env.PLATFORM }}/${{ env.CONFIG }}
