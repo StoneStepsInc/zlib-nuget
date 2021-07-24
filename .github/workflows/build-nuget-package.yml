@@ -42,7 +42,7 @@ jobs:
     - name: Upload zLib Source
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: zlib-source
+        name: zLib-source
         path: zlib-${{ env.PKG_VER }}
 
   build-zLib:
