@@ -10,10 +10,20 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A zLib compression library for MSVC projects.</description>
     <releaseNotes>
+Package Notes:
+
+  * Static libraries built for x64/Win32 platforms
+  * Built against Debug/Release MT/DLL CRT
+  * Compiled with the stdcall calling convention
+
+zLib Changes:
+
 Version 1.2.11 has these key improvements over 1.2.10:
 
   * Fix deflate stored bug when pulling last block from window
   * Permit immediate deflateParams changes before any deflate input
+
+See zLib change log for a full list:
 
 https://zlib.net/ChangeLog.txt
     </releaseNotes>

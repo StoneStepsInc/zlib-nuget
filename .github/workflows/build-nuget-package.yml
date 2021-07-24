@@ -1,6 +1,21 @@
 name: zLib v1.2.11
 
-# manual and REST API runs only
+#
+# When `publish-package` is set to `yes`, the workflow will build
+# the package and publish it to nuget.org. Otherwise, a package
+# will be built as an artifact and may be downloaded via GitHub UI.
+#
+# Published Nuget package will use the 4th version component as a
+# package revision number because Nuget lacks package revision
+# support.
+#
+# Without publishing, a Nuget package will be uploaded as an artifact
+# of the workflow run and will be named using a pre-release version,
+# which is an unfortunate workaround for a lack of build promotion
+# support between GitHub and Nuget. This means that true pre-release
+# packages will conflict with CI packages, but for this repository
+# this is not an issue that will ever need to be addressed.
+#
 on:
   workflow_dispatch:
     inputs:
@@ -17,6 +32,12 @@ on:
 #
 # Check that the directory name within the downloaded source archive
 # matches the name referenced in `ZLIB_DNAME`.
+#
+# For each change in `PKG_VER`, `PKG_REV` must be reset to `1` (one).
+#
+# Package revision should be incremented by one every time package
+# content is changed in any way, such as changing compiler options,
+# adding or removing files, changing any text in README files, etc.
 #
 env:
   PKG_VER: 1.2.11

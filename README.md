@@ -40,7 +40,7 @@ configurations.
 ## Building a Nuget Package
 
 This project can build a Nuget package for zLib either locally
-or via GitHub actions. In each case, following steps are taken.
+or via a GitHub workflow. In each case, following steps are taken.
 
   * zLib source archive is downloaded from zLib's website and
     its SHA-256 signature is verified.
@@ -53,7 +53,7 @@ or via GitHub actions. In each case, following steps are taken.
     locally and Enterprise Edition to build libraries on GitHub.
 
   * Build artifacts for all platforms and configurations are
-    collected in staging directories under `nuget/build/native`.
+    collected in staging directories under `nuget/build/native/lib`.
 
   * `nuget.exe` is used to package staged files with the first
     three version components used as a zLib version and the last
@@ -83,18 +83,47 @@ to build a package with the revision `123`.
 ### Version Locations
 
 zLib version is located in a few places in this repository and
-needs to be changed in all of them when a new version of zLib
-is released.
+needs to be changed in all of them for a new version of zLib.
 
   * nuget/StoneSteps.zLib.Static.nuspec (`version`)
-  * devops/make-package.bat (`PKG_VER`, `ZLIB_FNAME`, `ZLIB_SHA256`)
-  * .github/workflows/build-nuget-package.yml (`PKG_VER`, `ZLIB_FNAME`, `ZLIB_SHA256`)
+  * devops/make-package.bat (`PKG_VER`, `PKG_REV`, `ZLIB_FNAME`,
+    `ZLIB_SHA256`)
+  * .github/workflows/build-nuget-package.yml (`PKG_VER`, `PKG_REV`,
+    `ZLIB_FNAME`, `ZLIB_SHA256`)
 
 `ZLIB_SHA256` ia a SHA-256 checksum of the zLib package file and
 needs to be changed when a new version of zLib is released.
 
 Verify that the new zLib archive follows the directory name
 pattern used in the `ZLIB_DNAME` variable.
+
+In the GitHub workflow YAML, `PKG_REV` must be reset to `1` (one)
+every time zLib version is changed. For local builds package
+revision is supplied on the command line and should be specified
+as `1` (one) for a new version of zLib.
+
+### GitHub Build Number
+
+Build number within the GitHub workflow YAML is maintained in an
+unconventional way because of the lack of proper build maturity
+management between GitHub and Nuget.
+
+For example, using build management systems, such as Artifactory,
+every build would generate a Nuget package with the same version
+and package revision and build numbers would be tracked within
+the build management system. A build that was successfully tested
+would be promoted to the production Nuget repository without
+generating a new build.
+
+Without a build management system, the GitHub workflow in this
+repository uses the pre-release version as a surrogate build
+number for builds that do not publish packages to nuget.org,
+so these builds can be downloaded and tested before the final
+build is made and published to nuget.org. This approach is not
+recommended for robust production environments because even
+though the final published package is built from the exact
+same source, the build process may still potentially introduce 
+some unknowns into the final package.
 
 ## Building Package Locally
 
@@ -105,8 +134,9 @@ Visual Studio, edit the file to use the correct path to the
 `vcvarsall.bat` file.
 
 Run `make-package.bat` from the repository root directory with a
-package revision as the first argument, which typically will be
-a build number.
+package revision as the first argument. There is no provision to
+manage build numbers from the command line and other tools should
+be used for this (e.g. Artifactory).
 
 ## Sample Application (zPipe)
 
@@ -120,8 +150,10 @@ to zLib's copyright and terms of use.
 
 In order to build `zpipe.exe`, open Nuget Package manager in
 the solution and install either the locally-built Nuget package
-or the one from nuget.org. `zpipe.exe` compresses/decompresses
-standard input/output and can be tested with this pipe:
+or the one from nuget.org.
+
+`zpipe.exe` compresses/decompresses standard input/output and
+can be tested with this pipe:
 
     echo ABC | zpipe | zpipe -d
 
@@ -132,7 +164,7 @@ second one.
 ## What's Debug CRT?
 
 Visual C/C++ provides C runtime library (CRT), which comes
-in several flavors designed for specific putposes. The debug
+in several flavors designed for specific purposes. The debug
 CRT is intended to help identifying various runtime issues
 early in the development process, such as memory corruption.
 
