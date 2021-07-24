@@ -1,4 +1,4 @@
-name: zLib v1.2.11
+name: 'zLib v1.2.11 rev 1'
 
 #
 # When `publish-package` is set to `yes`, the workflow will build
@@ -229,6 +229,7 @@ jobs:
         name: zLib-Win32-Release
         path: nuget\build\native\lib
 
+      # this is an unconventional use of the pre-release version - see README.md
     - name: Make CI Nuget package
       if: ${{ github.event.inputs.publish-package != 'yes' }}
       run: |
@@ -250,3 +251,7 @@ jobs:
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
+    - name: Make Nuget package
+      if: ${{ github.event.inputs.publish-package == 'yes' }}
+      run: |
+        nuget push StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
