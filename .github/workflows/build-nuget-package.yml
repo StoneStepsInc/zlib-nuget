@@ -49,6 +49,13 @@ jobs:
     name: Build zLib
     needs: [prep-zLib-source]
     runs-on: windows-latest
+    env:
+      PLATFORM: ${{ matrix.platform }}
+      CONFIG: ${{ matrix.config }}
+      VCVARS: ${{ matrix.vcvars }}
+      DEBUG: ${{ matrix.debug }}
+      ZLIB_STATICLIB: zlib.lib
+      ZLIB_STATICLIB_PDB: zlib.pdb
 
     strategy:
       matrix:
@@ -77,28 +84,28 @@ jobs:
         name: zLib-source
         path: zlib-${{ env.PKG_VER }}
 
-    - name: Build x86/Debug
-      env:
-        PLATFORM: ${{ matrix.platform }}
-        CONFIG: ${{ matrix.config }}
-        VCVARS: ${{ matrix.vcvars }}
-        DEBUG: ${{ matrix.debug }}
-        ZLIB_STATICLIB: zlib.lib
-        ZLIB_STATICLIB_PDB: zlib.pdb
+    - name: Build zLib
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
         call "${{ env.VCVARSALL }}" %VCVARS%
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG%
-        mkdir "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%"
-        copy /Y "%ZLIB_STATICLIB%" "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%\"
-        copy /Y "%ZLIB_STATICLIB_PDB%" "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%\"
+
+    - name: Collect artifacts
+      run: |
+        mkdir "lib\%PLATFORM%\%CONFIG%"
+        copy /Y "zlib-${{ env.PKG_VER }}\%ZLIB_STATICLIB%" "lib\%PLATFORM%\%CONFIG%\"
+        copy /Y "zlib-${{ env.PKG_VER }}\%ZLIB_STATICLIB_PDB%" "lib\%PLATFORM%\%CONFIG%\"
+
+    - name: Clean-up
+      working-directory: zlib-${{ env.PKG_VER }}
+      run: |
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG% clean
 
     - name: Upload zLib ${{ env.PLATFORM }}/${{ env.CONFIG }}
       uses: actions/upload-artifact@v2.2.1
       with:
         name: zlib-${{ env.PLATFORM }}-${{ env.CONFIG }}
-        path: ..\nuget\build\native\lib\
+        path: lib\
 
   package-zLib:
     name: Package zLib
@@ -125,26 +132,27 @@ jobs:
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-x64-Debug
-        path: ..\nuget\build\native\lib
+        path: nuget\build\native\lib
 
     - name: Download zLib x64/Release
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-x64-Release
-        path: ..\nuget\build\native\lib
+        path: nuget\build\native\lib
 
     - name: Download zLib Win32/Debug
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-Win32-Debug
-        path: ..\nuget\build\native\lib
+        path: nuget\build\native\lib
 
     - name: Download zLib Win32/Release
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-Win32-Release
-        path: ..\nuget\build\native\lib
+        path: nuget\build\native\lib
 
     - name: Make Nuget package
       run: |
+        dir /S /B
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
