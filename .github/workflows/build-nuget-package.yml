@@ -4,8 +4,8 @@ name: zLib v1.2.11
 on:
   workflow_dispatch:
     inputs:
-      PKG_REV:
-        description: zLib Package Revision
+      publish-package:
+        description: Publish Nuget Package?
         required: false
 
 #
@@ -20,7 +20,7 @@ on:
 #
 env:
   PKG_VER: 1.2.11
-  PKG_REV: ${{ github.event.inputs.PKG_REV }}
+  PKG_REV: 1
   BUILD_NUMBER: ${{ github.run_number }}
 
   #
@@ -209,23 +209,23 @@ jobs:
         path: nuget\build\native\lib
 
     - name: Make CI Nuget package
-      if: ${{ github.event.inputs.PKG_REV == '' }}
+      if: ${{ github.event.inputs.publish-package != 'yes' }}
       run: |
-        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}
+        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
     - name: Upload CI Nuget package
-      if: ${{ github.event.inputs.PKG_REV == '' }}
+      if: ${{ github.event.inputs.publish-package != 'yes' }}
       uses: actions/upload-artifact@v2.2.1
       with:
         name: zLib CI Nuget package
-        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}-ci.${{ env.BUILD_NUMBER }}.nupkg
+        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
 
       #
       # Use `-Version` explicitly to override the version in the manifest,
       # so we can usurp the 4th version component for the build number.
       #
     - name: Make Nuget package
-      if: ${{ github.event.inputs.PKG_REV != '' }}
+      if: ${{ github.event.inputs.publish-package == 'yes' }}
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
