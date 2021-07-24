@@ -18,8 +18,8 @@ defaults:
 on: workflow_dispatch
 
 jobs:
-  build-windows:
-    name: Windows Build 
+  prep-zLib-source:
+    name: Prepare zLib Source
     runs-on: windows-latest
     
     steps:
@@ -39,6 +39,75 @@ jobs:
     - name: Patch Makefile.msc
       run: patch --unified --input patches\Makefile.msc.patch zlib-${{ env.PKG_VER }}\win32\Makefile.msc
 
+    - name: Upload zLib Source
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zlib-source
+        path: zlib-${{ env.PKG_VER }}
+
+  build-zLib:
+    name: Build zLib
+    needs: [prep-zLib-source]
+    runs-on: windows-latest
+
+    strategy:
+      matrix:
+       include:
+         - platform: x64
+           config: Debug
+           vcvars: x64
+           debug: DEBUG=1
+         - platform: x64
+           config: Release
+           vcvars: x64
+           debug: ''
+         - platform: Win32
+           config: Debug
+           vcvars: x86
+           debug: DEBUG=1
+         - platform: Win32
+           config: Release
+           vcvars: x86
+           debug: ''
+
+    steps:
+    - name: Download zLib Source
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-source
+        path: zlib-${{ env.PKG_VER }}
+
+    - name: Build x86/Debug
+      env:
+        PLATFORM: ${{ matrix.platform }}
+        CONFIG: ${{ matrix.config }}
+        VCVARS: ${{ matrix.vcvars }}
+        DEBUG: ${{ matrix.debug }}
+        ZLIB_STATICLIB: zlib.lib
+        ZLIB_STATICLIB_PDB: zlib.pdb
+      working-directory: zlib-${{ env.PKG_VER }}
+      run: |
+        call "${{ env.VCVARSALL }}" %VCVARS%
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG%
+        mkdir "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%"
+        copy /Y "%ZLIB_STATICLIB%" "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%\"
+        copy /Y "%ZLIB_STATICLIB_PDB%" "..\nuget\build\native\lib\%PLATFORM%\%CONFIG%\"
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG% clean
+
+    - name: Upload zLib ${{ env.PLATFORM }}/${{ env.CONFIG }}
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zlib-${{ env.PLATFORM }}-${{ env.CONFIG }}
+        path: ..\nuget\build\native\lib\
+
+  package-zLib:
+    name: Package zLib
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Copy license
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
@@ -51,37 +120,29 @@ jobs:
         mkdir ..\nuget\build\native\include
         copy *.h ..\nuget\build\native\include\
 
-    - name: Build x86/Debug
-      working-directory: zlib-${{ env.PKG_VER }}
-      run: |
-        call "${{ env.VCVARSALL }}" x86
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
-        call ..\devops\copy-config Win32 Debug
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
+    - name: Download zLib x64/Debug
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-x64-Debug
+        path: ..\nuget\build\native\lib
 
-    - name: Build x86/Release
-      working-directory: zlib-${{ env.PKG_VER }}
-      run: |
-        call "${{ env.VCVARSALL }}" x86
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
-        call ..\devops\copy-config Win32 Release
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
+    - name: Download zLib x64/Release
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-x64-Release
+        path: ..\nuget\build\native\lib
 
-    - name: Build x64/Debug
-      working-directory: zlib-${{ env.PKG_VER }}
-      run: |
-        call "${{ env.VCVARSALL }}" x64
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
-        call ..\devops\copy-config Win32 Debug
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
+    - name: Download zLib Win32/Debug
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-Win32-Debug
+        path: ..\nuget\build\native\lib
 
-    - name: Build x64/Release
-      working-directory: zlib-${{ env.PKG_VER }}
-      run: |
-        call "${{ env.VCVARSALL }}" x64
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
-        call ..\devops\copy-config Win32 Release
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
+    - name: Download zLib Win32/Release
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-Win32-Release
+        path: ..\nuget\build\native\lib
 
     - name: Make Nuget package
       run: |
