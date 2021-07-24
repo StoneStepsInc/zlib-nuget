@@ -105,7 +105,7 @@ jobs:
     - name: Upload zLib ${{ env.PLATFORM }}/${{ env.CONFIG }}
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: zlib-${{ env.PLATFORM }}-${{ env.CONFIG }}
+        name: zLib-${{ env.PLATFORM }}-${{ env.CONFIG }}
         path: lib\
 
   package-zLib:
