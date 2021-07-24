@@ -117,17 +117,21 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Download zLib Source
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-source
+        path: zlib-${{ env.PKG_VER }}
+
     - name: Copy license
-      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        mkdir ..\nuget\licenses
-        copy zlib.h ..\nuget\licenses\zlib.h.txt
+        mkdir nuget\licenses
+        copy zlib-${{ env.PKG_VER }}\zlib.h nuget\licenses\zlib.h.txt
 
     - name: Copy header files
-      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        mkdir ..\nuget\build\native\include
-        copy *.h ..\nuget\build\native\include\
+        mkdir nuget\build\native\include
+        copy zlib-${{ env.PKG_VER }}\*.h nuget\build\native\include\
 
     - name: Download zLib x64/Debug
       uses: actions/download-artifact@v2.0.7
