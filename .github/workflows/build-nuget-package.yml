@@ -211,7 +211,7 @@ jobs:
     - name: Make CI Nuget package
       if: ${{ github.event.inputs.PKG_REV == '' }}
       run: |
-        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}
 
     - name: Upload CI Nuget package
       if: ${{ github.event.inputs.PKG_REV == '' }}
