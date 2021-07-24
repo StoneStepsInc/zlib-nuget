@@ -39,11 +39,15 @@ jobs:
     - name: Patch Makefile.msc
       run: patch --unified --input patches\Makefile.msc.patch zlib-${{ env.PKG_VER }}\win32\Makefile.msc
 
+    - name: Archive patched zLib
+      run: |
+        7z a -tzip zLib-patched-source.zip ${{ env.ZLIB_DNAME }}
+
     - name: Upload zLib Source
       uses: actions/upload-artifact@v2.2.1
       with:
         name: zLib-source
-        path: zlib-${{ env.PKG_VER }}
+        path: zLib-patched-source.zip
 
   build-zLib:
     name: Build zLib
@@ -82,7 +86,11 @@ jobs:
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-source
-        path: zlib-${{ env.PKG_VER }}
+        path: .
+
+    - name: Extract patched source
+      run: |
+        7z x zLib-patched-source.zip
 
     - name: Build zLib
       working-directory: zlib-${{ env.PKG_VER }}
@@ -114,8 +122,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - name: Extract patched source
+      run: |
+        7z x zLib-patched-source.zip
 
     - name: Download zLib Source
       uses: actions/download-artifact@v2.0.7
@@ -159,5 +168,4 @@ jobs:
 
     - name: Make Nuget package
       run: |
-        dir /S /B
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
