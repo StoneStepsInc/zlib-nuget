@@ -122,15 +122,15 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Extract patched source
-      run: |
-        7z x zLib-patched-source.zip
-
     - name: Download zLib Source
       uses: actions/download-artifact@v2.0.7
       with:
         name: zLib-source
-        path: zlib-${{ env.PKG_VER }}
+        path: .
+
+    - name: Extract patched source
+      run: |
+        7z x zLib-patched-source.zip
 
     - name: Copy license
       run: |
