@@ -1,4 +1,12 @@
-name: Build Nuget Package Y
+name: zLib v1.2.11
+
+# manual and REST API runs only
+on:
+  workflow_dispatch:
+    inputs:
+      PKG_REV:
+        description: zLib Package Revision
+        required: false
 
 #
 # For each new zLib release, change these variables:
@@ -12,7 +20,8 @@ name: Build Nuget Package Y
 #
 env:
   PKG_VER: 1.2.11
-  PKG_REV: ${{ github.run_number }}
+  PKG_REV: ${{ github.event.inputs.PKG_REV }}
+  BUILD_NUMBER: ${{ github.run_number }}
 
   #
   # GitHub won't allow referencing `env` within this section, which
@@ -30,9 +39,6 @@ env:
 defaults:
   run:
     shell: cmd
-
-# manual and REST API runs only
-on: workflow_dispatch
 
 jobs:
   #
@@ -202,10 +208,24 @@ jobs:
         name: zLib-Win32-Release
         path: nuget\build\native\lib
 
+    - name: Make CI Nuget package
+      if: ${{ github.event.inputs.PKG_REV == '' }}
+      run: |
+        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+
+    - name: Upload CI Nuget package
+      if: ${{ github.event.inputs.PKG_REV == '' }}
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zLib CI Nuget package
+        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
+
       #
       # Use `-Version` explicitly to override the version in the manifest,
       # so we can usurp the 4th version component for the build number.
       #
     - name: Make Nuget package
+      if: ${{ github.event.inputs.PKG_REV != '' }}
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+
