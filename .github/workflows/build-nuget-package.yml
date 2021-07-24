@@ -123,6 +123,9 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Download zLib Source
       uses: actions/download-artifact@v2.0.7
       with:
