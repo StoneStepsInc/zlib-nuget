@@ -5,7 +5,6 @@ env:
   PKG_REV: ${{ github.run_number }}
 
   ZLIB_FNAME: zlib1211.zip
-  #ZLIB_DNAME: zlib-${{ env.PKG_VER }}
   ZLIB_SHA256: d7510a8ee1918b7d0cad197a089c0a2cd4d6df05fee22389f67f115e738b178d
 
   VCVARSALL: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall'
@@ -37,9 +36,13 @@ jobs:
         7z x ${{ env.ZLIB_FNAME }}
 
     - name: Patch Makefile.msc
-      run: patch --unified --input patches\Makefile.msc.patch zlib-${{ env.PKG_VER }}\win32\Makefile.msc
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
 
     - name: Archive patched zLib
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         7z a -tzip zLib-patched-source.zip ${{ env.ZLIB_DNAME }}
 
@@ -85,19 +88,25 @@ jobs:
         7z x zLib-patched-source.zip
 
     - name: Build zLib
-      working-directory: zlib-${{ env.PKG_VER }}
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      working-directory: ${{ env.ZLIB_DNAME }}
       run: |
         call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG%
 
     - name: Collect artifacts
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir "lib\%PLATFORM%\%CONFIG%"
-        copy /Y "zlib-${{ env.PKG_VER }}\%ZLIB_STATICLIB%" "lib\%PLATFORM%\%CONFIG%\"
-        copy /Y "zlib-${{ env.PKG_VER }}\%ZLIB_STATICLIB_PDB%" "lib\%PLATFORM%\%CONFIG%\"
+        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB%" "lib\%PLATFORM%\%CONFIG%\"
+        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB_PDB%" "lib\%PLATFORM%\%CONFIG%\"
 
     - name: Clean-up
-      working-directory: zlib-${{ env.PKG_VER }}
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      working-directory: ${{ env.ZLIB_DNAME }}
       run: |
         call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
         nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG% clean
@@ -125,14 +134,18 @@ jobs:
         7z x zLib-patched-source.zip
 
     - name: Copy license
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir nuget\licenses
-        copy zlib-${{ env.PKG_VER }}\zlib.h nuget\licenses\zlib.h.txt
+        copy ${{ env.ZLIB_DNAME }}\zlib.h nuget\licenses\zlib.h.txt
 
     - name: Copy header files
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir nuget\build\native\include
-        copy zlib-${{ env.PKG_VER }}\*.h nuget\build\native\include\
+        copy ${{ env.ZLIB_DNAME }}\*.h nuget\build\native\include\
 
     - name: Download zLib x64/Debug
       uses: actions/download-artifact@v2.0.7
@@ -161,3 +174,9 @@ jobs:
     - name: Make Nuget package
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+
+    - name: (temp) Upload Nuget package
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zLib Nuget package
+        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg
