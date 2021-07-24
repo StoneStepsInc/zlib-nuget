@@ -46,7 +46,7 @@ jobs:
     - name: Upload zLib Source
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: zLib-source
+        name: zLib-patched-source
         path: zLib-patched-source.zip
 
   build-zLib:
@@ -54,38 +54,30 @@ jobs:
     needs: [prep-zLib-source]
     runs-on: windows-latest
     env:
-      PLATFORM: ${{ matrix.platform }}
-      CONFIG: ${{ matrix.config }}
-      VCVARS: ${{ matrix.vcvars }}
-      DEBUG: ${{ matrix.debug }}
+      PLATFORM: ${{ matrix.build-platform }}
+      CONFIG: ${{ matrix.build-config }}
+      VCVARS_ARGS: ${{ matrix.vcvars-args }}
+      NMAKE_DEBUG: ${{ matrix.nmake-debug }}
       ZLIB_STATICLIB: zlib.lib
       ZLIB_STATICLIB_PDB: zlib.pdb
 
     strategy:
       matrix:
+       build-platform: [x64, Win32]
+       build-config: [Debug, Release]
        include:
-         - platform: x64
-           config: Debug
-           vcvars: x64
-           debug: DEBUG=1
-         - platform: x64
-           config: Release
-           vcvars: x64
-           debug: ''
-         - platform: Win32
-           config: Debug
-           vcvars: x86
-           debug: DEBUG=1
-         - platform: Win32
-           config: Release
-           vcvars: x86
-           debug: ''
+         - build-platform: x64
+           vcvars-args: x64
+         - build-platform: Win32
+           vcvars-args: x86
+         - build-config: Debug
+           nmake-debug: DEBUG=1
 
     steps:
-    - name: Download zLib Source
+    - name: Download patched source
       uses: actions/download-artifact@v2.0.7
       with:
-        name: zLib-source
+        name: zLib-patched-source
         path: .
 
     - name: Extract patched source
@@ -95,8 +87,8 @@ jobs:
     - name: Build zLib
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        call "${{ env.VCVARSALL }}" %VCVARS%
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG%
+        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG%
 
     - name: Collect artifacts
       run: |
@@ -107,13 +99,13 @@ jobs:
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        call "${{ env.VCVARSALL }}" %VCVARS%
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %DEBUG% clean
+        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG% clean
 
-    - name: Upload zLib ${{ env.PLATFORM }}/${{ env.CONFIG }}
+    - name: Upload zLib ${{ matrix.build-platform }}/${{ matrix.build-config }}
       uses: actions/upload-artifact@v2.2.1
       with:
-        name: zLib-${{ env.PLATFORM }}-${{ env.CONFIG }}
+        name: zLib-${{ matrix.build-platform }}-${{ matrix.build-config }}
         path: lib\
 
   package-zLib:
@@ -125,7 +117,7 @@ jobs:
     - name: Download zLib Source
       uses: actions/download-artifact@v2.0.7
       with:
-        name: zLib-source
+        name: zLib-patched-source
         path: .
 
     - name: Extract patched source
