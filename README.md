@@ -5,7 +5,7 @@ libraries and header files  for `Win32`/`x64` platforms and
 `Debug`/`Release` configurations.
 
 Visit zLib website for additional information about the zLib
-project and documentation:
+project and library documentation:
 
 https://zlib.net/
 
@@ -15,12 +15,12 @@ This package contains only static libraries for all platforms
 and configurations listed above. There are no dynamic libraries
 included.
 
-The zLib static library appropriate for current platform and
-configuration is explicitly referenced within this package and
-will appear within the solution folder tree after the package
-is installed. The solution may need to be reloaded to make the
-library file visible. This library may be moved into any
-solution folder after the installation.
+The zLib static library appropriate for the platform and
+configuration selected in a Visual Studio solution is explicitly
+referenced within this package and will appear within the solution
+folder tree after the package is installed. The solution may need
+to be reloaded to make the library file visible. This library may
+be moved into any solution folder after the installation.
 
 Note that the zLib library path in this package is valid only
 for build configurations named `Debug` and `Release` and will
@@ -29,7 +29,13 @@ package for projects with configurations other than `Debug` and
 `Release`.
 
 See `StoneSteps.zLib.Static.props` and `StoneSteps.zLib.Static.targets`
-for specific project configuration details and file locations.
+for specific package configuration details and file locations.
+
+The static library is built with the `stdcall` calling convention.
+
+The debug versions of the library are built with `NDEBUG` defined,
+so `assert` calls work as intended for `Debug` and `Release`
+configurations.
 
 ## Building a Nuget Package
 
@@ -49,13 +55,14 @@ or via GitHub actions. In each case, following steps are taken.
   * Build artifacts for all platforms and configurations are
     collected in staging directories under `nuget/build/native`.
 
-  * `nuget.exe` is used to package staged files in a Nuget package
-    with the first three version components used for zLib version
-    and the last component used as a package revision. See _Package
+  * `nuget.exe` is used to package staged files with the first
+    three version components used as a zLib version and the last
+    version component used as a package revision. See _Package
     Version_ section for more details.
 
-  * The nuget package built in GitHub is uploaded to nuget.org. The
-    package built locally is saved in the root directory.
+  * The Nuget package built on GitHub is uploaded to nuget.org.
+    The package built locally is saved in the root project
+    directory.
 
 ## Package Version
 
@@ -85,6 +92,9 @@ is released.
 
 `ZLIB_SHA256` ia a SHA-256 checksum of the zLib package file and
 needs to be changed when a new version of zLib is released.
+
+Verify that the new zLib archive follows the directory name
+pattern used in the `ZLIB_DNAME` variable.
 
 ## Building Package Locally
 
@@ -136,3 +146,6 @@ CRT (`/MDd`) and multi-threaded non-debug DLL CRT (`/MD`). See
 this page for additional information about the CRT.
 
 https://docs.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features?view=msvc-160
+
+See `Makefile.msc.patch` in `patches` for changes against the
+zLib source.
