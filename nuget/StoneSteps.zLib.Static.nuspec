@@ -10,25 +10,12 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A zLib compression library for MSVC projects.</description>
     <releaseNotes>
-This package contains zLib header files and static libraries
-built with VS2019 for Win32 and x64 platforms using zLib's
-build scripts in win32/Makefile.msc.
+Version 1.2.11 has these key improvements over 1.2.10:
 
-Note that Debug and Release configurations contain the same
-libraries and debug symbols because zLib does not generate
-separate debug configurations.
+  * Fix deflate stored bug when pulling last block from window
+  * Permit immediate deflateParams changes before any deflate input
 
-The zLib static library is explicitly referenced within this
-package and will appear within the solution folder tree after
-the package is installed. The solution may need to be reloaded
-to make the library file visible. This library may be moved
-into any solution folder, where it will remain when the
-solution is reloaded.
-
-Note that zLib library path is valid only for build configurations
-named Debug and Release and will not be found for any other
-configuration name. Do not install this package for projects with
-configurations other than Debug and Release.
+https://zlib.net/ChangeLog.txt
     </releaseNotes>
     <copyright>Jean-loup Gailly, Mark Adler</copyright>
     <tags>zLib, native, static library, library</tags>
