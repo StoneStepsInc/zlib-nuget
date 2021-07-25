@@ -1,4 +1,14 @@
-name: zLib v1.2.11-1
+#
+# The version part is immutable in the name, but the package revision
+# component after the dash should be kept in sync with `PKG_REV`.
+# GitHun doesn't allow variables in the workflow names, so this cannot
+# be automated.
+#
+# For new zLib versions, copy this file with a new version name to
+# restart build numbers from `1`. This is necessary because GitHub
+# maintains build numbers per workflow file name.
+#
+name: zLib v1.2.11-2
 
 #
 # When `publish-package` is set to `yes`, the workflow will build
@@ -41,7 +51,7 @@ on:
 #
 env:
   PKG_VER: 1.2.11
-  PKG_REV: 1
+  PKG_REV: 2
   BUILD_NUMBER: ${{ github.run_number }}
 
   #
