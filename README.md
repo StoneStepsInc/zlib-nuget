@@ -105,15 +105,15 @@ as `1` (one) for a new version of zLib.
 ### GitHub Build Number
 
 Build number within the GitHub workflow YAML is maintained in an
-unconventional way because of the lack of proper build maturity
-management between GitHub and Nuget.
+unconventional way because of the lack of build maturity management
+between GitHub and Nuget.
 
 For example, using build management systems, such as Artifactory,
 every build would generate a Nuget package with the same version
-and package revision and build numbers would be tracked within
-the build management system. A build that was successfully tested
-would be promoted to the production Nuget repository without
-generating a new build.
+and package revision for the upcoming release and build numbers
+would be tracked within the build management system. A build that
+was successfully tested would be promoted to the production Nuget
+repository without generating a new build.
 
 Without a build management system, the GitHub workflow in this
 repository uses the pre-release version as a surrogate build
@@ -123,7 +123,7 @@ build is made and published to nuget.org. This approach is not
 recommended for robust production environments because even
 though the final published package is built from the exact
 same source, the build process may still potentially introduce 
-some unknowns into the final package.
+some unknowns into the final package (e.g. build VM was updated).
 
 ## Building Package Locally
 
