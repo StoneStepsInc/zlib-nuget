@@ -57,6 +57,9 @@ env:
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
   VCVARSALL: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall'
 
+  # Nuget Gallery (www.nuget.org) publish URL
+  NUGET_PUB_URL: https://api.nuget.org/v3/index.json
+
 defaults:
   run:
     shell: cmd
@@ -251,7 +254,7 @@ jobs:
       run: |
         nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
-    - name: Make Nuget package
+    - name: Publish Nuget package
       if: ${{ github.event.inputs.publish-package == 'yes' }}
       run: |
-        nuget push StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
+        nuget push StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -Source ${{ env.NUGET_PUB_URL }} -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
