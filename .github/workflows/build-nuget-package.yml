@@ -1,0 +1,257 @@
+name: zLib v1.2.11-1
+
+#
+# When `publish-package` is set to `yes`, the workflow will build
+# the package and publish it to nuget.org. Otherwise, a package
+# will be built as an artifact and may be downloaded via GitHub UI.
+#
+# Published Nuget package will use the 4th version component as a
+# package revision number because Nuget lacks package revision
+# support.
+#
+# Without publishing, a Nuget package will be uploaded as an artifact
+# of the workflow run and will be named using a pre-release version,
+# which is an unfortunate workaround for a lack of build promotion
+# support between GitHub and Nuget. This means that true pre-release
+# packages will conflict with CI packages, but for this repository
+# this is not an issue that will ever need to be addressed.
+#
+on:
+  workflow_dispatch:
+    inputs:
+      publish-package:
+        description: Publish Nuget Package?
+        required: false
+
+#
+# For each new zLib release, change these variables:
+#
+#   * PKG_VER
+#   * ZLIB_FNAME
+#   * ZLIB_SHA256
+#
+# Check that the directory name within the downloaded source archive
+# matches the name referenced in `ZLIB_DNAME`.
+#
+# For each change in `PKG_VER`, `PKG_REV` must be reset to `1` (one).
+#
+# Package revision should be incremented by one every time package
+# content is changed in any way, such as changing compiler options,
+# adding or removing files, changing any text in README files, etc.
+#
+env:
+  PKG_VER: 1.2.11
+  PKG_REV: 1
+  BUILD_NUMBER: ${{ github.run_number }}
+
+  #
+  # GitHub won't allow referencing `env` within this section, which
+  # means that in order to reference the zLib source directory we
+  # need to concatenate variables in-place (e.g. `zlib-${{ env.PKG_VER }}`)
+  # or to define them in each step where the source directory is
+  # referenced, which is what's done in this pipeline (`ZLIB_DNAME`).
+  #
+  ZLIB_FNAME: zlib1211.zip
+  ZLIB_SHA256: d7510a8ee1918b7d0cad197a089c0a2cd4d6df05fee22389f67f115e738b178d
+
+  # for VS Community Edition, replace `Enterprise` with `Community` in the path
+  VCVARSALL: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall'
+
+defaults:
+  run:
+    shell: cmd
+
+jobs:
+  #
+  # Downloads zLib source archive, checks it integrity against the
+  # published SHA-256 signature and patches the sourcefor this build.
+  #
+  prep-zLib-source:
+    name: Prepare zLib Source
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download zLib
+      run: curl --output ${{ env.ZLIB_FNAME }} https://zlib.net/${{ env.ZLIB_FNAME }}
+    
+    - name: Verify zLib checksum
+      run: 7z h -scrcSHA256 ${{ env.ZLIB_FNAME }} | findstr /C:"SHA256 for data" | call devops\check-sha256 "${{ env.ZLIB_SHA256 }}"
+
+    - name: Extract zLib
+      run: |
+        7z x ${{ env.ZLIB_FNAME }}
+
+    - name: Patch source
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
+
+      # uploading a single artifact file works faster for subsequent downloads
+    - name: Archive patched source
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: |
+        7z a -tzip zLib-patched-source.zip ${{ env.ZLIB_DNAME }}
+
+    - name: Upload patched source
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zLib-patched-source
+        path: zLib-patched-source.zip
+
+  build-zLib:
+    name: Build zLib
+    needs: [prep-zLib-source]
+    runs-on: windows-latest
+    env:
+      PLATFORM: ${{ matrix.build-platform }}
+      CONFIG: ${{ matrix.build-config }}
+      VCVARS_ARGS: ${{ matrix.vcvars-args }}
+      NMAKE_DEBUG: ${{ matrix.nmake-debug }}
+      ZLIB_STATICLIB: zlib.lib
+      ZLIB_STATICLIB_PDB: zlib.pdb
+
+    strategy:
+      matrix:
+       build-platform: [x64, Win32]
+       build-config: [Debug, Release]
+       include:
+         - build-platform: x64
+           vcvars-args: x64
+         - build-platform: Win32
+           vcvars-args: x86
+         - build-config: Debug
+           nmake-debug: DEBUG=1
+
+    steps:
+    - name: Download patched source
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-patched-source
+        path: .
+
+    - name: Extract patched source
+      run: |
+        7z x zLib-patched-source.zip
+
+    - name: Build zLib
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      working-directory: ${{ env.ZLIB_DNAME }}
+      run: |
+        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG%
+
+    - name: Collect build artifacts
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: |
+        mkdir "lib\%PLATFORM%\%CONFIG%"
+        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB%" "lib\%PLATFORM%\%CONFIG%\"
+        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB_PDB%" "lib\%PLATFORM%\%CONFIG%\"
+
+    - name: Clean-up
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      working-directory: ${{ env.ZLIB_DNAME }}
+      run: |
+        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
+        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG% clean
+
+      #
+      # Collect build artifacts in a way that we can just download them
+      # right into the Nuget package staging area.
+      #
+    - name: Upload zLib ${{ matrix.build-platform }}/${{ matrix.build-config }}
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zLib-${{ matrix.build-platform }}-${{ matrix.build-config }}
+        path: lib\
+
+  package-zLib:
+    name: Package zLib
+    needs: [build-zLib]
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Download zLib Source
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-patched-source
+        path: .
+
+    - name: Extract patched source
+      run: |
+        7z x zLib-patched-source.zip
+
+    - name: Copy license
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: |
+        mkdir nuget\licenses
+        copy ${{ env.ZLIB_DNAME }}\zlib.h nuget\licenses\zlib.h.txt
+
+    - name: Copy header files
+      env:
+        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      run: |
+        mkdir nuget\build\native\include
+        copy ${{ env.ZLIB_DNAME }}\*.h nuget\build\native\include\
+
+      # each download below expects build artifacts to be in their staging directories
+    - name: Download zLib x64/Debug
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-x64-Debug
+        path: nuget\build\native\lib
+
+    - name: Download zLib x64/Release
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-x64-Release
+        path: nuget\build\native\lib
+
+    - name: Download zLib Win32/Debug
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-Win32-Debug
+        path: nuget\build\native\lib
+
+    - name: Download zLib Win32/Release
+      uses: actions/download-artifact@v2.0.7
+      with:
+        name: zLib-Win32-Release
+        path: nuget\build\native\lib
+
+      # this is an unconventional use of the pre-release version - see README.md
+    - name: Make CI Nuget package
+      if: ${{ github.event.inputs.publish-package != 'yes' }}
+      run: |
+        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+
+    - name: Upload CI Nuget package
+      if: ${{ github.event.inputs.publish-package != 'yes' }}
+      uses: actions/upload-artifact@v2.2.1
+      with:
+        name: zLib CI Nuget package
+        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
+
+      #
+      # Use `-Version` explicitly to override the version in the manifest,
+      # so we can usurp the 4th version component for the build number.
+      #
+    - name: Make Nuget package
+      if: ${{ github.event.inputs.publish-package == 'yes' }}
+      run: |
+        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+
+    - name: Make Nuget package
+      if: ${{ github.event.inputs.publish-package == 'yes' }}
+      run: |
+        nuget push StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
