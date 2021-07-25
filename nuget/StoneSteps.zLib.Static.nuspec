@@ -6,7 +6,7 @@
     <authors>Jean-loup Gailly (contents), Mark Adler (contents)</authors>
     <owners>Stone Steps (package)</owners>
     <license type="file">licenses\zlib.h.txt</license>
-    <projectUrl>https://zlib.net/</projectUrl>
+    <projectUrl>https://github.com/StoneStepsInc/zlib-nuget</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A zLib compression library for MSVC projects.</description>
     <releaseNotes>
@@ -28,7 +28,7 @@ See zLib change log for a full list:
 https://zlib.net/ChangeLog.txt
     </releaseNotes>
     <copyright>Jean-loup Gailly, Mark Adler</copyright>
-    <tags>zLib, native, static library, library</tags>
+    <tags>zLib, native, library, "static library"</tags>
   </metadata>
   <files>
    <file src="README.txt" target=""/>
