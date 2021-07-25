@@ -28,7 +28,7 @@ See zLib change log for a full list:
 https://zlib.net/ChangeLog.txt
     </releaseNotes>
     <copyright>Jean-loup Gailly, Mark Adler</copyright>
-    <tags>zLib, native, library, "static library"</tags>
+    <tags>zLib, native, library</tags>
   </metadata>
   <files>
    <file src="README.txt" target=""/>
