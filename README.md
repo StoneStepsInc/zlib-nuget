@@ -60,7 +60,7 @@ or via a GitHub workflow. In each case, following steps are taken.
     version component used as a package revision. See _Package
     Version_ section for more details.
 
-  * The Nuget package built on GitHub is uploaded to nuget.org.
+  * The Nuget package built on GitHub is uploaded to [nuget.org][].
     The package built locally is saved in the root project
     directory.
 
@@ -150,7 +150,7 @@ to zLib's copyright and terms of use.
 
 In order to build `zpipe.exe`, open Nuget Package manager in
 the solution and install either the locally-built Nuget package
-or the one from nuget.org.
+or the one from [nuget.org][].
 
 `zpipe.exe` compresses/decompresses standard input/output and
 can be tested with this pipe:
@@ -181,3 +181,5 @@ https://docs.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features?view
 
 See `Makefile.msc.patch` in `patches` for changes against the
 zLib source.
+
+[nuget.org]: https://www.nuget.org/packages/StoneSteps.zLib.Static/
