@@ -1,6 +1,6 @@
-This package contains only static libraries for all platforms
-and configurations listed above. There are no dynamic libraries
-included.
+This package contains static zLib libraries and header files for
+Win32/x64 platforms and Debug/Release configurations. There are
+no dynamic libraries included.
 
 The zLib static library appropriate for the platform and
 configuration selected in a Visual Studio solution is explicitly
