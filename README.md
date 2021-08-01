@@ -88,8 +88,8 @@ needs to be changed in all of them for a new version of zLib.
   * nuget/StoneSteps.zLib.Static.nuspec (`version`)
   * devops/make-package.bat (`PKG_VER`, `PKG_REV`, `ZLIB_FNAME`,
     `ZLIB_SHA256`)
-  * .github/workflows/build-nuget-package.yml (`PKG_VER`, `PKG_REV`,
-    `ZLIB_FNAME`, `ZLIB_SHA256`)
+  * .github/workflows/build-nuget-package.yml (`name`, `PKG_VER`,
+    `PKG_REV`, `ZLIB_FNAME`, `ZLIB_SHA256`)
 
 `ZLIB_SHA256` ia a SHA-256 checksum of the zLib package file and
 needs to be changed when a new version of zLib is released.
