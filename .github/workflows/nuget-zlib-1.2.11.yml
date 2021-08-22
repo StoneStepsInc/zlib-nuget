@@ -4,7 +4,7 @@
 # GitHub doesn't allow variables in the workflow names, so this cannot
 # be automated.
 #
-# For new zLib versions, copy this file with a new version name to
+# For new zLib versions, rename this file with a new version name to
 # restart build numbers from `1`. This is necessary because GitHub
 # maintains build numbers per workflow file name.
 #
