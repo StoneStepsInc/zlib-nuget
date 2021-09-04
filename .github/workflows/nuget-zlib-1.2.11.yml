@@ -257,7 +257,7 @@ jobs:
 
       #
       # Use `-Version` explicitly to override the version in the manifest,
-      # so we can usurp the 4th version component for the build number.
+      # so we can usurp the 4th version component for the package revision.
       #
     - name: Make Nuget package
       if: ${{ github.event.inputs.publish-package == 'yes' }}
