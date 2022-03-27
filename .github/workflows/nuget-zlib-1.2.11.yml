@@ -81,7 +81,7 @@ jobs:
   #
   prep-zLib-source:
     name: Prepare zLib Source
-    runs-on: windows-latest
+    runs-on: windows-2019
     
     steps:
     - name: Checkout
@@ -118,7 +118,7 @@ jobs:
   build-zLib:
     name: Build zLib
     needs: [prep-zLib-source]
-    runs-on: windows-latest
+    runs-on: windows-2019
     env:
       PLATFORM: ${{ matrix.build-platform }}
       CONFIG: ${{ matrix.build-config }}
@@ -187,7 +187,7 @@ jobs:
   package-zLib:
     name: Package zLib
     needs: [build-zLib]
-    runs-on: windows-latest
+    runs-on: windows-2019
 
     steps:
     - name: Checkout
