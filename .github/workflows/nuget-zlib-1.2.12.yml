@@ -50,8 +50,8 @@ on:
 # adding or removing files, changing any text in README files, etc.
 #
 env:
-  PKG_VER: 1.2.11
-  PKG_REV: 2
+  PKG_VER: 1.2.12
+  PKG_REV: 1
   BUILD_NUMBER: ${{ github.run_number }}
 
   #
@@ -61,7 +61,7 @@ env:
   # or to define them in each step where the source directory is
   # referenced, which is what's done in this pipeline (`ZLIB_DNAME`).
   #
-  ZLIB_FNAME: zlib1211.zip
+  ZLIB_FNAME: zlib1212.zip
   ZLIB_SHA256: 173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
 
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
