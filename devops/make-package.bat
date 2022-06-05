@@ -7,12 +7,12 @@ if "%~1" == "" (
   goto :EOF
 )
 
-set PKG_VER=1.2.11
+set PKG_VER=1.2.12
 set PKG_REV=%~1
 
-set ZLIB_FNAME=zlib1211.zip
+set ZLIB_FNAME=zlib1212.zip
 set ZLIB_DNAME=zlib-%PKG_VER%
-set ZLIB_SHA256=d7510a8ee1918b7d0cad197a089c0a2cd4d6df05fee22389f67f115e738b178d
+set ZLIB_SHA256=173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
 
 set PATCH=c:\Program Files\Git\usr\bin\patch.exe
 set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe

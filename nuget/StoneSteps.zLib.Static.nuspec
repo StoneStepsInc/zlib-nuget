@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>StoneSteps.zLib.Static</id>
-    <version>1.2.11</version>
+    <version>1.2.12</version>
     <authors>Jean-loup Gailly (contents), Mark Adler (contents)</authors>
     <owners>Stone Steps (package)</owners>
     <license type="file">licenses\zlib.h.txt</license>
@@ -18,10 +18,14 @@ Package Notes:
 
 zLib Changes:
 
-Version 1.2.11 has these key improvements over 1.2.10:
+Version 1.2.12 has these key improvements over 1.2.11:
 
-  * Fix deflate stored bug when pulling last block from window
-  * Permit immediate deflateParams changes before any deflate input
+  * Fix a deflate bug when using the Z_FIXED strategy that can result in out-of-bound accesses.
+  * Fix a deflate bug when the window is full in deflate_stored().
+  * Speed up CRC-32 computations by a factor of 1.5 to 3.
+  * Use the hardware CRC-32 instruction on ARMv8 processors.
+  * Speed up crc32_combine() with powers of x tables.
+  * Add crc32_combine_gen() and crc32_combine_op() for fast combines. 
 
 See zLib change log for a full list:
 
