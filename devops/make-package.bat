@@ -32,11 +32,10 @@ if ERRORLEVEL 1 (
 cd %ZLIB_DNAME%
 
 rem
-rem There is no patch utility available on the GitHub Windows
-rem build VM, so we just overwrite Makefile.msc, since we know
-rem its exact version.
+rem Patch the source to work around build problems
 rem
 "%PATCH%" --unified --input ..\patches\Makefile.msc.patch win32\Makefile.msc
+"%PATCH%" --unified --input ..\patches\crc32.c.patch crc32.c
 
 rem there's no dedicated license file, only what's in zlib.h
 mkdir ..\nuget\licenses
