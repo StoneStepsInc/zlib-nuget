@@ -100,7 +100,9 @@ jobs:
     - name: Patch source
       env:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-      run: patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
+      run: |
+        patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
+        patch --unified --input patches\crc32.c.patch ${{ env.ZLIB_DNAME }}crc32.c
 
       # uploading a single artifact file works faster for subsequent downloads
     - name: Archive patched source
