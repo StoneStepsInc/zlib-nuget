@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package >
   <metadata>
-    <id>StoneSteps.zLib.Static</id>
+    <id>StoneSteps.zLib.VS2022.Static</id>
     <version>1.2.12</version>
     <authors>Jean-loup Gailly (contents), Mark Adler (contents)</authors>
     <owners>Stone Steps (package)</owners>

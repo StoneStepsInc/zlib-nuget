@@ -28,7 +28,8 @@ not work for any other configuration names. Do not install this
 package for projects with configurations other than `Debug` and
 `Release`.
 
-See `StoneSteps.zLib.Static.props` and `StoneSteps.zLib.Static.targets`
+See `StoneSteps.zLib.VS2022.Static.props` and
+`StoneSteps.zLib.VS2022.Static.targets`
 for specific package configuration details and file locations.
 
 The static library is built with the `stdcall` calling convention.
@@ -85,7 +86,7 @@ to build a package with the revision `123`.
 zLib version is located in a few places in this repository and
 needs to be changed in all of them for a new version of zLib.
 
-  * nuget/StoneSteps.zLib.Static.nuspec (`version`)
+  * nuget/StoneSteps.zLib.VS2022.Static.nuspec (`version`)
   * devops/make-package.bat (`PKG_VER`, `PKG_REV`, `ZLIB_FNAME`,
     `ZLIB_SHA256`)
   * .github/workflows/build-nuget-package.yml (`name`, `PKG_VER`,
@@ -185,4 +186,4 @@ https://docs.microsoft.com/en-us/cpp/c-runtime-library/crt-library-features?view
 See `Makefile.msc.patch` in `patches` for changes against the
 zLib source.
 
-[nuget.org]: https://www.nuget.org/packages/StoneSteps.zLib.Static/
+[nuget.org]: https://www.nuget.org/packages/StoneSteps.zLib.VS2022.Static/

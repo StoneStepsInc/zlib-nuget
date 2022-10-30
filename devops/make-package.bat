@@ -16,7 +16,7 @@ set ZLIB_SHA256=173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
 
 set PATCH=c:\Program Files\Git\usr\bin\patch.exe
 set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe
-set VCVARSALL=C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall
+set VCVARSALL=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall
 
 curl --output %ZLIB_FNAME% https://zlib.net/%ZLIB_FNAME%
 
@@ -97,4 +97,4 @@ rem
 rem Create a package
 rem
 
-nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version %PKG_VER%.%PKG_REV%
+nuget pack nuget\StoneSteps.zLib.VS2022.Static.nuspec -Version %PKG_VER%.%PKG_REV%

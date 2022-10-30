@@ -13,7 +13,7 @@
 /nuget/licenses/
 
 # locally-built Nuget package
-/StoneSteps.zlib.Static.*.nupkg
+/StoneSteps.zlib.VS2022.Static.*.nupkg
 
 # sample app for testing the Nuget package
 /sample-zpipe/.vs/

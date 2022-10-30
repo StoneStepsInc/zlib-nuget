@@ -65,7 +65,7 @@ env:
   ZLIB_SHA256: 173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
 
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
-  VCVARSALL: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall'
+  VCVARSALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall'
 
   # Nuget Gallery (www.nuget.org) publish URL
   NUGET_PUB_URL: https://api.nuget.org/v3/index.json
@@ -81,7 +81,7 @@ jobs:
   #
   prep-zLib-source:
     name: Prepare zLib Source
-    runs-on: windows-2019
+    runs-on: windows-2022
     
     steps:
     - name: Checkout
@@ -248,14 +248,14 @@ jobs:
     - name: Make CI Nuget package
       if: ${{ github.event.inputs.publish-package != 'yes' }}
       run: |
-        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+        nuget pack nuget\StoneSteps.zLib.VS2022.Static.nuspec -Suffix "ci.%BUILD_NUMBER%" -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
     - name: Upload CI Nuget package
       if: ${{ github.event.inputs.publish-package != 'yes' }}
       uses: actions/upload-artifact@v2.2.1
       with:
         name: zLib CI Nuget package
-        path: StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
+        path: StoneSteps.zLib.VS2022.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
 
       #
       # Use `-Version` explicitly to override the version in the manifest,
@@ -264,9 +264,9 @@ jobs:
     - name: Make Nuget package
       if: ${{ github.event.inputs.publish-package == 'yes' }}
       run: |
-        nuget pack nuget\StoneSteps.zLib.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
+        nuget pack nuget\StoneSteps.zLib.VS2022.Static.nuspec -Version ${{ env.PKG_VER }}.${{ env.PKG_REV }}
 
     - name: Publish Nuget package
       if: ${{ github.event.inputs.publish-package == 'yes' }}
       run: |
-        nuget push StoneSteps.zLib.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -Source ${{ env.NUGET_PUB_URL }} -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
+        nuget push StoneSteps.zLib.VS2022.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}.nupkg -Source ${{ env.NUGET_PUB_URL }} -ApiKey "${{ secrets.NUGET_API_KEY }}" -NonInteractive
