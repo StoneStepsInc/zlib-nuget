@@ -7,18 +7,19 @@ if "%~1" == "" (
   goto :EOF
 )
 
-set PKG_VER=1.2.12
+set PKG_VER=1.2.13
 set PKG_REV=%~1
 
-set ZLIB_FNAME=zlib1212.zip
+set ZLIB_FNAME=zlib1213.zip
 set ZLIB_DNAME=zlib-%PKG_VER%
-set ZLIB_SHA256=173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
+rem zLib's original signature for .zip is available on zlib.net
+set ZLIB_SHA256=d233fca7cf68db4c16dc5287af61f3cd01ab62495224c66639ca3da537701e42
 
 set PATCH=c:\Program Files\Git\usr\bin\patch.exe
 set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe
 set VCVARSALL=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall
 
-curl --output %ZLIB_FNAME% https://zlib.net/%ZLIB_FNAME%
+curl --location --output %ZLIB_FNAME% https://github.com/madler/zlib/releases/download/v%PKG_VER%/%ZLIB_FNAME%
 
 "%SEVENZIP_EXE%" h -scrcSHA256 %ZLIB_FNAME% | findstr /C:"SHA256 for data" | call devops\check-sha256 "%ZLIB_SHA256%"
 
@@ -35,7 +36,6 @@ rem
 rem Patch the source to work around build problems
 rem
 "%PATCH%" --unified --input ..\patches\Makefile.msc.patch win32\Makefile.msc
-"%PATCH%" --unified --input ..\patches\crc32.c.patch crc32.c
 
 rem there's no dedicated license file, only what's in zlib.h
 mkdir ..\nuget\licenses

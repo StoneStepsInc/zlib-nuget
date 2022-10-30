@@ -30,7 +30,7 @@ on:
   workflow_dispatch:
     inputs:
       publish-package:
-        description: Publish Nuget Package?
+        description: Publish Nuget Package (yes/no)?
         required: false
 
 #
@@ -50,7 +50,7 @@ on:
 # adding or removing files, changing any text in README files, etc.
 #
 env:
-  PKG_VER: 1.2.12
+  PKG_VER: 1.2.13
   PKG_REV: 1
   BUILD_NUMBER: ${{ github.run_number }}
 
@@ -61,8 +61,9 @@ env:
   # or to define them in each step where the source directory is
   # referenced, which is what's done in this pipeline (`ZLIB_DNAME`).
   #
-  ZLIB_FNAME: zlib1212.zip
-  ZLIB_SHA256: 173e89893dcb8b4a150d7731cd72f0602f1d6b45e60e2a54efdf7f3fc3325fd7
+  ZLIB_FNAME: zlib1213.zip
+  # zLib's original signature for .zip is available on zlib.net
+  ZLIB_SHA256: d233fca7cf68db4c16dc5287af61f3cd01ab62495224c66639ca3da537701e42
 
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
   VCVARSALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall'
@@ -88,7 +89,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Download zLib
-      run: curl --output ${{ env.ZLIB_FNAME }} https://zlib.net/${{ env.ZLIB_FNAME }}
+      run: curl --output ${{ env.ZLIB_FNAME }} https://github.com/madler/zlib/releases/download/v${{ env.PKG_VER }}/${{ env.ZLIB_FNAME }}
     
     - name: Verify zLib checksum
       run: 7z h -scrcSHA256 ${{ env.ZLIB_FNAME }} | findstr /C:"SHA256 for data" | call devops\check-sha256 "${{ env.ZLIB_SHA256 }}"
@@ -102,7 +103,6 @@ jobs:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
-        patch --unified --input patches\crc32.c.patch ${{ env.ZLIB_DNAME }}\crc32.c
 
       # uploading a single artifact file works faster for subsequent downloads
     - name: Archive patched source
