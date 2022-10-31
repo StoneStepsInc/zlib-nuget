@@ -89,7 +89,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Download zLib
-      run: curl --output ${{ env.ZLIB_FNAME }} https://github.com/madler/zlib/releases/download/v${{ env.PKG_VER }}/${{ env.ZLIB_FNAME }}
+      run: curl --location --output ${{ env.ZLIB_FNAME }} https://github.com/madler/zlib/releases/download/v${{ env.PKG_VER }}/${{ env.ZLIB_FNAME }}
     
     - name: Verify zLib checksum
       run: 7z h -scrcSHA256 ${{ env.ZLIB_FNAME }} | findstr /C:"SHA256 for data" | call devops\check-sha256 "${{ env.ZLIB_SHA256 }}"
