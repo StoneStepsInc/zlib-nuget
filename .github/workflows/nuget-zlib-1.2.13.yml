@@ -86,7 +86,7 @@ jobs:
     
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Download zLib
       run: curl --output ${{ env.ZLIB_FNAME }} https://github.com/madler/zlib/releases/download/v${{ env.PKG_VER }}/${{ env.ZLIB_FNAME }}
@@ -112,7 +112,7 @@ jobs:
         7z a -tzip zLib-patched-source.zip ${{ env.ZLIB_DNAME }}
 
     - name: Upload patched source
-      uses: actions/upload-artifact@v2.2.1
+      uses: actions/upload-artifact@v3
       with:
         name: zLib-patched-source
         path: zLib-patched-source.zip
@@ -143,7 +143,7 @@ jobs:
 
     steps:
     - name: Download patched source
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-patched-source
         path: .
@@ -181,7 +181,7 @@ jobs:
       # right into the Nuget package staging area.
       #
     - name: Upload zLib ${{ matrix.build-platform }}/${{ matrix.build-config }}
-      uses: actions/upload-artifact@v2.2.1
+      uses: actions/upload-artifact@v3
       with:
         name: zLib-${{ matrix.build-platform }}-${{ matrix.build-config }}
         path: lib\
@@ -193,10 +193,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Download zLib Source
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-patched-source
         path: .
@@ -221,25 +221,25 @@ jobs:
 
       # each download below expects build artifacts to be in their staging directories
     - name: Download zLib x64/Debug
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-x64-Debug
         path: nuget\build\native\lib
 
     - name: Download zLib x64/Release
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-x64-Release
         path: nuget\build\native\lib
 
     - name: Download zLib Win32/Debug
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-Win32-Debug
         path: nuget\build\native\lib
 
     - name: Download zLib Win32/Release
-      uses: actions/download-artifact@v2.0.7
+      uses: actions/download-artifact@v3
       with:
         name: zLib-Win32-Release
         path: nuget\build\native\lib
@@ -252,7 +252,7 @@ jobs:
 
     - name: Upload CI Nuget package
       if: ${{ github.event.inputs.publish-package != 'yes' }}
-      uses: actions/upload-artifact@v2.2.1
+      uses: actions/upload-artifact@v3
       with:
         name: zLib CI Nuget package
         path: StoneSteps.zLib.VS2022.Static.${{ env.PKG_VER }}.${{ env.PKG_REV }}-ci.${{ env.BUILD_NUMBER }}.nupkg
