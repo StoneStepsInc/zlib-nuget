@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Library Include="$(ZLibDir)lib\$(Platform)\$(Configuration)\$(ZLibName).lib" />
+    <Library Condition="$(Configuration.StartsWith('D'))" Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib" />
+    <Library Condition="$(Configuration.StartsWith('R'))" Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib" />
   </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
