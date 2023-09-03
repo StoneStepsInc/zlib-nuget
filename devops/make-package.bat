@@ -7,13 +7,15 @@ if "%~1" == "" (
   goto :EOF
 )
 
-set PKG_VER=1.2.13
+set PKG_VER=1.3
+rem used only if upstream version lacks the patch component; should be commented out otherwise (see README.md)
+set PKG_VER_PATCH=.0
 set PKG_REV=%~1
 
-set ZLIB_FNAME=zlib1213.zip
+set ZLIB_FNAME=zlib13.zip
 set ZLIB_DNAME=zlib-%PKG_VER%
 rem zLib's original signature for .zip is available on zlib.net
-set ZLIB_SHA256=d233fca7cf68db4c16dc5287af61f3cd01ab62495224c66639ca3da537701e42
+set ZLIB_SHA256=c561d09347f674f0d72692e7c75d9898919326c532aab7f8c07bb43b07efeb38
 
 set PATCH=c:\Program Files\Git\usr\bin\patch.exe
 set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe
@@ -97,4 +99,4 @@ rem
 rem Create a package
 rem
 
-nuget pack nuget\StoneSteps.zLib.VS2022.Static.nuspec -Version %PKG_VER%.%PKG_REV%
+nuget pack nuget\StoneSteps.zLib.VS2022.Static.nuspec -Version %PKG_VER%%PKG_VER_PATCH%.%PKG_REV%
