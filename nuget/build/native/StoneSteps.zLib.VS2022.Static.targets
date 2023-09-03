@@ -1,12 +1,22 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup>
-    <Library Include="$(ZLibDir)lib\$(Platform)\$(Configuration)\$(ZLibName).lib" />
-  </ItemGroup>
+  <Choose>
+    <!-- C99 requires NDEBUG to be defined for release builds (see 7.2 Diagnostics <assert.h>) -->
+    <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(%(PreprocessorDefinitions), '^(.*;)*NDEBUG(;.*)*$'))">
+      <ItemGroup>
+        <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ZLibDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <!-- Define ZLIB_WINAPI to make sure function calls are generated with the same calling convention as those in zlib12.lib -->
+      <!-- Define ZLIB_WINAPI to make sure function calls are generated with the same calling convention as those in zlib.lib -->
       <PreprocessorDefinitions>ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>

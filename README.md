@@ -1,8 +1,7 @@
 ## zLib Nuget Package
 
 This project builds a zLib Nuget package with static zLib
-libraries and header files  for `Win32`/`x64` platforms and
-`Debug`/`Release` configurations.
+libraries and header files  for `Win32`/`x64` platforms.
 
 Visit zLib website for additional information about the zLib
 project and library documentation:
@@ -12,8 +11,7 @@ https://zlib.net/
 ## Package Configuration
 
 This package contains only static libraries for all platforms
-and configurations listed above. There are no dynamic libraries
-included.
+listed above. There are no dynamic libraries included.
 
 The zLib static library appropriate for the platform and
 configuration selected in a Visual Studio solution is explicitly
@@ -22,11 +20,11 @@ folder tree after the package is installed. The solution may need
 to be reloaded to make the library file visible. This library may
 be moved into any solution folder after the installation.
 
-Note that the zLib library path in this package is valid only
-for build configurations named `Debug` and `Release` and will
-not work for any other configuration names. Do not install this
-package for projects with configurations other than `Debug` and
-`Release`.
+Note that the zLib library path in this package will be selected
+as `Debug` or `Release` based on the presence of the preprocessor
+symbol `NDEBUG`, which is required to be defined for non-debug
+builds (see C99, _7.2 Diagnostics \<assert.h>_). Do not install
+this package if your projects do not define `NDEBUG` as described.
 
 See `StoneSteps.zLib.VS2022.Static.props` and
 `StoneSteps.zLib.VS2022.Static.targets`
@@ -34,9 +32,9 @@ for specific package configuration details and file locations.
 
 The static library is built with the `stdcall` calling convention.
 
-The debug versions of the library are built with `NDEBUG` defined,
-so `assert` calls work as intended for `Debug` and `Release`
-configurations.
+The non-debug versions of the library are built with `NDEBUG`
+defined, so `assert` calls work as intended for `Debug` and
+`Release` configurations.
 
 ## Building a Nuget Package
 
@@ -50,7 +48,7 @@ or via a GitHub workflow. In each case, following steps are taken.
     using the debug CRT. See the _What's Debug CRT_ section for
     more details.
 
-  * VS2019 Community Edition is used to build zLib libraries
+  * VS2022 Community Edition is used to build zLib libraries
     locally and Enterprise Edition to build libraries on GitHub.
 
   * Build artifacts for all platforms and configurations are
@@ -81,6 +79,11 @@ in the package specification file.
 Specifically, `nuget.exe` is invoked with `-Version=1.2.11.123`
 to build a package with the revision `123`.
 
+In cases when the upstream version lacks the patch level version
+component, `.0` is injected to keep the version consistent with
+the version pattern sequence (e.g. v1.3 is listed in Nuget as
+v1.3.0).
+
 ### Version Locations
 
 zLib version is located in a few places in this repository and
@@ -88,9 +91,9 @@ needs to be changed in all of them for a new version of zLib.
 
   * nuget/StoneSteps.zLib.VS2022.Static.nuspec (`version`)
   * devops/make-package.bat (`PKG_VER`, `PKG_REV`, `ZLIB_FNAME`,
-    `ZLIB_SHA256`)
+    `ZLIB_SHA256`, `PKG_VER_PATCH`)
   * .github/workflows/build-nuget-package.yml (`name`, `PKG_VER`,
-    `PKG_REV`, `ZLIB_FNAME`, `ZLIB_SHA256`)
+    `PKG_REV`, `ZLIB_FNAME`, `ZLIB_SHA256`, `PKG_VER_PATCH`)
 
 `ZLIB_SHA256` ia a SHA-256 checksum of the zLib package file and
 needs to be changed when a new version of zLib is released.
@@ -105,6 +108,10 @@ GitHub maintains build numbers per workflow file name.
 
 For local builds package revision is supplied on the command line
 and should be specified as `1` (one) for a new version of zLib.
+
+When the upstream version lacks the patch component, `PKG_VER_PATCH`
+should be uncommented in all locations listed above. Otherwise it
+should be commented out.
 
 ### GitHub Build Number
 
@@ -129,6 +136,42 @@ though the final published package is built from the exact
 same source, the build process may still potentially introduce 
 some unknowns into the final package (e.g. build VM was updated).
 
+## CMake vs. `nmake`
+
+zLib may be built with CMake, but it is configured such that
+using `--prefix` with `cmake --install` fails to copy build
+artifacts into the specified location and instead forces the
+the protected `C:\Program Files\` directory to be used. In
+addition to this, release builds are not configured to
+generate debug symbols.
+
+Because of the issues above, `nmake` is used to build zLib
+libraries, as it is simpler to maintain, sompared to patching
+CMake files. If you would like to build zLib via CMake,
+following commands may be used to build all configurations.
+
+    cd zlib-1.3
+
+    cmake -S . -B build\Win32 -A Win32
+    cmake -S . -B build\x64 -A x64
+
+    cmake --build build\Win32 --config Debug
+    cmake --build build\Win32 --config Release
+
+    cmake --build build\x64 --config Debug
+    cmake --build build\x64 --config Release
+
+The `cmake --install` command will attempt to install build
+artifacts into `C:\Program Files\`, which is not a good place
+for libraries, even though it is used by CMake as such.
+
+Note that CMake builds static libraries with different
+names, compared to those within this package. If you switch
+to using libraries built with Cmake, you will need to change
+references to `zlib.lib` generated by this project to
+`zlibstatic.lib` and `zlibstaticd.lib`, which are generated
+by CMake.
+
 ## Building Package Locally
 
 You can build a Nuget package locally with `make-package.bat`
@@ -140,7 +183,7 @@ Visual Studio, edit the file to use the correct path to the
 Run `make-package.bat` from the repository root directory with a
 package revision as the first argument. There is no provision to
 manage build numbers from the command line and other tools should
-be used for this (e.g. Artifactory).
+be used for this.
 
 ## Sample Application (zPipe)
 
