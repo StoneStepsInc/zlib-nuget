@@ -219,7 +219,8 @@ jobs:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir nuget\build\native\include
-        copy ${{ env.ZLIB_DNAME }}\*.h nuget\build\native\include\
+        copy ${{ env.ZLIB_DNAME }}\zlib.h nuget\build\native\include\
+        copy ${{ env.ZLIB_DNAME }}\zconf.h nuget\build\native\include\
 
       # each download below expects build artifacts to be in their staging directories
     - name: Download zLib x64/Debug

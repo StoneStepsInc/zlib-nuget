@@ -44,10 +44,11 @@ mkdir ..\nuget\licenses
 copy zlib.h ..\nuget\licenses\zlib.h.txt
 
 rem
-rem Header files
+rem Header files (see ZLIB_PUBLIC_HDRS in CMakeLists.txt)
 rem
 mkdir ..\nuget\build\native\include
-copy *.h ..\nuget\build\native\include\
+copy zlib.h ..\nuget\build\native\include\
+copy zconf.h ..\nuget\build\native\include\
 
 rem
 rem x86 Debug
