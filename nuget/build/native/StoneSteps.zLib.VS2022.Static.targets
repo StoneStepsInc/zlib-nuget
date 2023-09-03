@@ -1,18 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Choose>
-    <!-- C99 requires NDEBUG to be defined for release builds (see 7.2 Diagnostics <assert.h>) -->
-    <When Condition="$([System.Text.RegularExpressions.Regex]::IsMatch(%(PreprocessorDefinitions), '^(.*;)*NDEBUG(;.*)*$'))">
-      <ItemGroup>
-        <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <ItemGroup>
+    <Library Include="$(ZLibDir)lib\$(Platform)\$(Configuration)\$(ZLibName).lib" />
+  </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ZLibDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

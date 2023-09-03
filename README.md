@@ -1,7 +1,8 @@
 ## zLib Nuget Package
 
 This project builds a zLib Nuget package with static zLib
-libraries and header files  for `Win32`/`x64` platforms.
+libraries and header files  for `Win32`/`x64` platforms and
+`Debug`/`Release` configurations.
 
 Visit zLib website for additional information about the zLib
 project and library documentation:
@@ -11,7 +12,8 @@ https://zlib.net/
 ## Package Configuration
 
 This package contains only static libraries for all platforms
-listed above. There are no dynamic libraries included.
+and configurations listed above. There are no dynamic libraries
+included.
 
 The zLib static library appropriate for the platform and
 configuration selected in a Visual Studio solution is explicitly
@@ -20,11 +22,11 @@ folder tree after the package is installed. The solution may need
 to be reloaded to make the library file visible. This library may
 be moved into any solution folder after the installation.
 
-Note that the zLib library path in this package will be selected
-as `Debug` or `Release` based on the presence of the preprocessor
-symbol `NDEBUG`, which is required to be defined for non-debug
-builds (see C99, _7.2 Diagnostics \<assert.h>_). Do not install
-this package if your projects do not define `NDEBUG` as described.
+Note that the zLib library path in this package is valid only
+for build configurations named `Debug` and `Release` and will
+not work for any other configuration names. Do not install this
+package for projects with configurations other than `Debug` and
+`Release`.
 
 See `StoneSteps.zLib.VS2022.Static.props` and
 `StoneSteps.zLib.VS2022.Static.targets`
