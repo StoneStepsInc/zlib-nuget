@@ -50,11 +50,11 @@ on:
 # adding or removing files, changing any text in README files, etc.
 #
 env:
-  PKG_VER: 1.3
+  PKG_VER: '1.3'
   # used only if upstream version lacks the patch component; should be commented out otherwise (see README.md)
-  PKG_VER_PATCH: .0
-  PKG_REV: 1
-  BUILD_NUMBER: ${{ github.run_number }}
+  PKG_VER_PATCH: '.0'
+  PKG_REV: '1'
+  BUILD_NUMBER: '${{ github.run_number }}'
 
   #
   # GitHub won't allow referencing `env` within this section, which
@@ -63,15 +63,15 @@ env:
   # or to define them in each step where the source directory is
   # referenced, which is what's done in this pipeline (`ZLIB_DNAME`).
   #
-  ZLIB_FNAME: zlib13.zip
+  ZLIB_FNAME: 'zlib13.zip'
   # zLib's original signature for .zip is available on zlib.net
-  ZLIB_SHA256: c561d09347f674f0d72692e7c75d9898919326c532aab7f8c07bb43b07efeb38
+  ZLIB_SHA256: 'c561d09347f674f0d72692e7c75d9898919326c532aab7f8c07bb43b07efeb38'
 
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
   VCVARSALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall'
 
   # Nuget Gallery (www.nuget.org) publish URL
-  NUGET_PUB_URL: https://api.nuget.org/v3/index.json
+  NUGET_PUB_URL: 'https://api.nuget.org/v3/index.json'
 
 defaults:
   run:
