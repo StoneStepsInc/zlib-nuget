@@ -5,7 +5,7 @@
     <version>1.3.0</version>
     <authors>Jean-loup Gailly (contents), Mark Adler (contents)</authors>
     <owners>Stone Steps (package)</owners>
-    <license type="file">licenses\zlib.h.txt</license>
+    <license type="file">licenses\LICENSE.txt</license>
     <projectUrl>https://github.com/StoneStepsInc/zlib-nuget</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A zLib compression library for MSVC projects.</description>
@@ -39,7 +39,7 @@ https://zlib.net/ChangeLog.txt
   </metadata>
   <files>
    <file src="README.txt" target=""/>
-   <file src="licenses\zlib.h.txt" target="licenses\zlib.h.txt"/>
+   <file src="licenses\LICENSE.txt" target="licenses\LICENSE.txt"/>
    <file src="build\**\*" target="build"/>
   </files>
 </package>

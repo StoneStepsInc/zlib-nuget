@@ -41,7 +41,7 @@ rem
 
 rem there's no dedicated license file, only what's in zlib.h
 mkdir ..\nuget\licenses
-copy zlib.h ..\nuget\licenses\zlib.h.txt
+copy LICENSE ..\nuget\licenses\LICENSE.txt
 
 rem
 rem Header files (see ZLIB_PUBLIC_HDRS in CMakeLists.txt)

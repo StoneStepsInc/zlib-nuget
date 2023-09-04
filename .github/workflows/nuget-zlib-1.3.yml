@@ -212,7 +212,7 @@ jobs:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir nuget\licenses
-        copy ${{ env.ZLIB_DNAME }}\zlib.h nuget\licenses\zlib.h.txt
+        copy ${{ env.ZLIB_DNAME }}\LICENSE nuget\licenses\LICENSE.txt
 
     - name: Copy header files
       env:
