@@ -27,7 +27,7 @@ the underlying `.vcxproj` file.
 
 Specifically, the initial project configurations have a property
 called `UseDebugLibraries` in the underlying `.vcxproj` file, which
-reflects whether the confiration is intended for building release
+reflects whether the configuration is intended for building release
 or development artifacts. Additional configurations copied from
 these initial ones inherit this property. Manually created
 configurations should have this property defined in the `.vcxproj`
@@ -151,12 +151,12 @@ some unknowns into the final package (e.g. build VM was updated).
 zLib may be built with CMake, but it is configured such that
 using `--prefix` with `cmake --install` fails to copy build
 artifacts into the specified location and instead forces the
-the protected `C:\Program Files\` directory to be used. In
+protected `C:\Program Files\` directory to be used. In
 addition to this, release builds are not configured to
 generate debug symbols.
 
 Because of the issues above, `nmake` is used to build zLib
-libraries, as it is simpler to maintain, sompared to patching
+libraries, as it is simpler to maintain, compared to patching
 CMake files. If you would like to build zLib via CMake,
 following commands may be used to build all configurations.
 
