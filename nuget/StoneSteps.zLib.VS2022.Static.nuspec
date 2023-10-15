@@ -15,6 +15,7 @@ Package Notes:
   * Static libraries built for x64/Win32 platforms
   * Built against Debug/Release MT/DLL CRT
   * Compiled with the stdcall calling convention
+  * Static libraries in this package are not injected into static library projects
 
 zLib Changes:
 

@@ -4,9 +4,10 @@ Win32/x64 platforms. There are no dynamic libraries included.
 The zLib static library appropriate for the platform and
 configuration selected in a Visual Studio solution is explicitly
 referenced within this package and will appear within the solution
-folder tree after the package is installed. The solution may need
-to be reloaded to make the library file visible. This library may
-be moved into any solution folder after the installation.
+folder tree after the package is installed, except for static
+library projects. The solution may need to be reloaded to make
+the library file visible. This library may be moved into any
+solution folder after the installation.
 
 Note that the zLib library path in this package will be selected
 as Debug or Release based on whether the active configuration is
@@ -21,8 +22,9 @@ these initial ones inherit this property. Manually created
 configurations should have this property defined in the .vcxproj
 file.
 
-Do not install this package if your projects use configurations
-without the UseDebugLibraries property.
+Do not install this package if your projects use debug configurations
+without `UseDebugLibraries`. Note that CMake-generated Visual Studio
+projects will not emit this property.
 
 The static library is built with the stdcall calling convention.
 

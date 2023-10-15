@@ -3,12 +3,19 @@
   <Choose>
     <!-- UseDebugLibraries is described in {VS2022}\Msbuild\Microsoft\VC\v170\1033\general_advanced.xml -->
     <When Condition="$(UseDebugLibraries)">
-      <ItemGroup>
+      <!-- 
+      For static library projects, Visual Studio merges additional static
+      libraries, like these included here, into the target static libraries
+      for their projects. This creates bloated static libraries that are
+      hard to troubleshoot. Avoid adding packaged static libraries into
+      projects that generate their own static libraries.
+      -->
+      <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary'">
         <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib" />
       </ItemGroup>
     </When>
     <Otherwise>
-      <ItemGroup>
+      <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary'">
         <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib" />
       </ItemGroup>
     </Otherwise>
