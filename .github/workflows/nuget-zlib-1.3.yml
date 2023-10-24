@@ -104,6 +104,7 @@ jobs:
       env:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
+        PATH %PATH:C:\Strawberry\c\bin;=%
         patch --unified --input patches\Makefile.msc.patch ${{ env.ZLIB_DNAME }}\win32\Makefile.msc
 
       # uploading a single artifact file works faster for subsequent downloads
