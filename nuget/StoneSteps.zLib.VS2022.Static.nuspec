@@ -16,6 +16,7 @@ Package Notes:
   * Built against Debug/Release MT/DLL CRT
   * Compiled with the stdcall calling convention
   * Static libraries in this package are not injected into static library projects
+  * Debug and Release libraries are included in build based on UseDebugLibraries
 
 zLib Changes:
 

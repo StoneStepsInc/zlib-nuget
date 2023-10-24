@@ -13,26 +13,21 @@ https://zlib.net/
 This package contains only static libraries for all platforms
 listed above. There are no dynamic libraries included.
 
-The zLib static library appropriate for the platform and
-configuration selected in a Visual Studio solution is explicitly
-referenced within this package and will appear within the solution
-folder tree after the package is installed, except for static
-library projects. The solution may need to be reloaded to make
-the library file visible. This library may be moved into any
-solution folder after the installation.
+The zLib static libraries from this package will appear within
+the installation target project after the package is installed.
+The solution may need to be reloaded to make libraries visible.
+Both, debug and release libraries will be listed in the project,
+but only the one appropriate for the currently selected
+configuration will be included in the build. These libraries
+may be moved into solution folders after the installation (e.g.
+`lib/Debug` and `lib/Release`).
 
 Note that the zLib library path in this package will be selected
-as `Debug` or `Release` based on whether the active configuration
-is designated as a development or as a release configuration in
-the underlying `.vcxproj` file.
-
-Specifically, the initial project configurations have a property
-called `UseDebugLibraries` in the underlying `.vcxproj` file,
-which reflects whether the configuration is intended for building
-release or development artifacts. Additional configurations copied
-from these initial ones inherit this property. Manually created
-configurations should have this property defined in the `.vcxproj`
-file.
+as `Debug` or `Release` based on whether the selected configuration
+is designated as a development or as a release configuration via
+the standard Visual Studio property called `UseDebugLibraries`.
+Additional configurations copied from the standard ones will
+inherit this property. 
 
 Do not install this package if your projects use debug configurations
 without `UseDebugLibraries`. Note that CMake-generated Visual Studio

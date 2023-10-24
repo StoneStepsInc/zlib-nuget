@@ -1,25 +1,29 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Choose>
-    <!-- UseDebugLibraries is described in {VS2022}\Msbuild\Microsoft\VC\v170\1033\general_advanced.xml -->
-    <When Condition="$(UseDebugLibraries)">
-      <!-- 
-      For static library projects, Visual Studio merges additional static
-      libraries, like these included here, into the target static libraries
-      for their projects. This creates bloated static libraries that are
-      hard to troubleshoot. Avoid adding packaged static libraries into
-      projects that generate their own static libraries.
-      -->
-      <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary'">
-        <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary'">
-        <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib" />
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
+  <!-- 
+  For static library projects, Visual Studio merges additional static
+  libraries, like these included here, into the target static libraries
+  for their projects. This creates bloated static libraries that are
+  hard to troubleshoot. Avoid adding packaged static libraries into
+  projects that generate their own static libraries.
+  -->
+  <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary'">
+    <!--
+    Both libraries will appear in the Visual Studio project, but only
+    one of them will be included in the build, based on whether the
+    selected configuration is set as debug or release, as indicated
+    by UseDebugLibraries, which is available in all standard Visual
+    Studio projects.
+
+    UseDebugLibraries is described in {VS2022}\Msbuild\Microsoft\VC\v170\1033\general_advanced.xml
+    -->
+    <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib">
+      <ExcludedFromBuild Condition="!$(UseDebugLibraries)">true</ExcludedFromBuild>
+    </Library>
+    <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib">
+      <ExcludedFromBuild Condition="$(UseDebugLibraries)">true</ExcludedFromBuild>
+    </Library>
+  </ItemGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ZLibDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
