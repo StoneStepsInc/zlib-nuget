@@ -37,11 +37,11 @@ if ERRORLEVEL 1 (
 cd %ZLIB_DNAME%
 
 rem
-rem Patch the source to work around build problems
+rem Patch the source to generate debug symbols for all builds and
+rem make sure dynamic MSVC CRT is used.
 rem
-"%PATCH%" --unified --input ..\patches\Makefile.msc.patch win32\Makefile.msc
+"%PATCH%" -p 1 --unified --input ..\patches\Makefile.msc.patch
 
-rem there's no dedicated license file, only what's in zlib.h
 mkdir ..\nuget\licenses
 copy LICENSE ..\nuget\licenses\LICENSE.txt
 
@@ -51,6 +51,17 @@ rem
 mkdir ..\nuget\build\native\include
 copy zlib.h ..\nuget\build\native\include\
 copy zconf.h ..\nuget\build\native\include\
+
+rem
+rem Keep using nmake while it is available in the source package,
+rem because CMake-generated output requires even more patching,
+rem as we would need to enable PDBs for release builds, rename
+rem libraries and change install to collect different platforms
+rem and configurations, which are not set up well in CMakeLists.txt
+rem (e.g. install prefix must be specified when build scripts
+rem are generated, so there's no way to collect installed files
+rem per configuration, etc).
+rem
 
 rem
 rem x86 Debug
