@@ -103,9 +103,10 @@ jobs:
     - name: Patch source
       env:
         ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+      working-directory: ${{ env.ZLIB_DNAME }}
       run: |
         PATH %PATH:C:\Strawberry\c\bin;=%
-        patch -p 1 --unified --input patches\Makefile.msc.patch
+        patch -p 1 --unified --input ..\patches\Makefile.msc.patch
 
       # uploading a single artifact file works faster for subsequent downloads
     - name: Archive patched source
