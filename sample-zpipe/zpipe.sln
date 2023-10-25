@@ -7,18 +7,24 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zpipe", "zpipe.vcxproj", "{
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		ABC (D)|x64 = ABC (D)|x64
-		ABC (D)|x86 = ABC (D)|x86
+		Custom (D)|x64 = Custom (D)|x64
+		Custom (D)|x86 = Custom (D)|x86
+		Custom (R)|x64 = Custom (R)|x64
+		Custom (R)|x86 = Custom (R)|x86
 		Debug|x64 = Debug|x64
 		Debug|x86 = Debug|x86
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-		XYZ (R)|x64 = XYZ (R)|x64
-		XYZ (R)|x86 = XYZ (R)|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{52E65FFB-D841-447C-817A-AA835C67BDA0}.ABC (D)|x64.Build.0 = ABC (D)|x64
-		{52E65FFB-D841-447C-817A-AA835C67BDA0}.ABC (D)|x86.Build.0 = ABC (D)|Win32
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (D)|x64.ActiveCfg = Custom (D)|x64
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (D)|x64.Build.0 = Custom (D)|x64
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (D)|x86.ActiveCfg = Custom (D)|Win32
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (D)|x86.Build.0 = Custom (D)|Win32
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (R)|x64.ActiveCfg = Custom (R)|x64
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (R)|x64.Build.0 = Custom (R)|x64
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (R)|x86.ActiveCfg = Custom (R)|Win32
+		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Custom (R)|x86.Build.0 = Custom (R)|Win32
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Debug|x64.ActiveCfg = Debug|x64
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Debug|x64.Build.0 = Debug|x64
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Debug|x86.ActiveCfg = Debug|Win32
@@ -27,8 +33,6 @@ Global
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Release|x64.Build.0 = Release|x64
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Release|x86.ActiveCfg = Release|Win32
 		{52E65FFB-D841-447C-817A-AA835C67BDA0}.Release|x86.Build.0 = Release|Win32
-		{52E65FFB-D841-447C-817A-AA835C67BDA0}.XYZ (R)|x64.Build.0 = XYZ (R)|x64
-		{52E65FFB-D841-447C-817A-AA835C67BDA0}.XYZ (R)|x86.Build.0 = XYZ (R)|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

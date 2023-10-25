@@ -3,7 +3,7 @@
 setlocal
 
 set ARCH="x64","Win32"
-set CONFIG="ABC (D)","XYZ (R)","Debug","Release"
+set CONFIG="Custom (D)","Custom (R)","Debug","Release"
 
 for %%p in (%ARCH%) do for %%c in (%CONFIG%) do msbuild /t:Rebuild /p:Configuration="%%~c";Platform="%%~p" sample-zpipe\zpipe.vcxproj
 
