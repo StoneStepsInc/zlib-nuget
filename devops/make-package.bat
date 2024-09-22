@@ -7,15 +7,15 @@ if "%~1" == "" (
   goto :EOF
 )
 
-set PKG_VER=1.3
+set PKG_VER=1.3.1
 rem used only if upstream version lacks the patch component; should be commented out otherwise (see README.md)
-set PKG_VER_PATCH=.0
+rem set PKG_VER_PATCH=.0
 set PKG_REV=%~1
 
-set ZLIB_FNAME=zlib13.zip
+set ZLIB_FNAME=zlib131.zip
 set ZLIB_DNAME=zlib-%PKG_VER%
 rem zLib's original signature for .zip is available on zlib.net
-set ZLIB_SHA256=c561d09347f674f0d72692e7c75d9898919326c532aab7f8c07bb43b07efeb38
+set ZLIB_SHA256=72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17
 
 set PATCH=c:\Program Files\Git\usr\bin\patch.exe
 set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe
