@@ -232,19 +232,19 @@ jobs:
         path: nuget\build\native\lib
 
     - name: Download zLib x64/Release
-      uses: actions/download-artifact@v
+      uses: actions/download-artifact@v4
       with:
         name: zLib-x64-Release
         path: nuget\build\native\lib
 
     - name: Download zLib Win32/Debug
-      uses: actions/download-artifact@v
+      uses: actions/download-artifact@v4
       with:
         name: zLib-Win32-Debug
         path: nuget\build\native\lib
 
     - name: Download zLib Win32/Release
-      uses: actions/download-artifact@v
+      uses: actions/download-artifact@v4
       with:
         name: zLib-Win32-Release
         path: nuget\build\native\lib
