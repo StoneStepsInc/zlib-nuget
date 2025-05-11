@@ -17,11 +17,11 @@
 
     UseDebugLibraries is described in {VS2022}\Msbuild\Microsoft\VC\v170\1033\general_advanced.xml
     -->
-    <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName).lib">
-      <ExcludedFromBuild Condition="!$(UseDebugLibraries)">true</ExcludedFromBuild>
+    <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName)d.lib">
+      <ExcludedFromBuild Condition="'$(UseDebugLibraries)' != 'true'">true</ExcludedFromBuild>
     </Library>
     <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib">
-      <ExcludedFromBuild Condition="$(UseDebugLibraries)">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(UseDebugLibraries)' == 'true'">true</ExcludedFromBuild>
     </Library>
   </ItemGroup>
   <ItemDefinitionGroup>

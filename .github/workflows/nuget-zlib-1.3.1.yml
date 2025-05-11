@@ -40,9 +40,6 @@ on:
 #   * ZLIB_FNAME
 #   * ZLIB_SHA256
 #
-# Check that the directory name within the downloaded source archive
-# matches the name referenced in `ZLIB_DNAME`.
-#
 # For each change in `PKG_VER`, `PKG_REV` must be reset to `1` (one).
 #
 # Package revision should be incremented by one every time package
@@ -59,9 +56,7 @@ env:
   #
   # GitHub won't allow referencing `env` within this section, which
   # means that in order to reference the zLib source directory we
-  # need to concatenate variables in-place (e.g. `zlib-${{ env.PKG_VER }}`)
-  # or to define them in each step where the source directory is
-  # referenced, which is what's done in this pipeline (`ZLIB_DNAME`).
+  # need to concatenate variables in-place (e.g. `zlib-${{ env.PKG_VER }}`).
   #
   ZLIB_FNAME: 'zlib131.zip'
   # zLib's original signature for .zip is available on zlib.net
@@ -100,20 +95,17 @@ jobs:
       run: |
         7z x ${{ env.ZLIB_FNAME }}
 
+      # GitHub won't allow disabling CRLF normalization and mangles the patch with CRLFs, which fails with --binary, which in this case is desired (a warning will be issued)
     - name: Patch source
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-      working-directory: ${{ env.ZLIB_DNAME }}
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
         PATH %PATH:C:\Strawberry\c\bin;=%
-        patch -p 1 --unified --input ..\patches\Makefile.msc.patch
+        patch --strip 1 --unified --input ..\patches\cmake-install-prefix.patch
 
       # uploading a single artifact file works faster for subsequent downloads
     - name: Archive patched source
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
-        7z a -tzip zLib-patched-source.zip ${{ env.ZLIB_DNAME }}
+        7z a -tzip zLib-patched-source.zip zlib-${{ env.PKG_VER }}
 
     - name: Upload patched source
       uses: actions/upload-artifact@v4
@@ -129,9 +121,7 @@ jobs:
       PLATFORM: ${{ matrix.build-platform }}
       CONFIG: ${{ matrix.build-config }}
       VCVARS_ARGS: ${{ matrix.vcvars-args }}
-      NMAKE_DEBUG: ${{ matrix.nmake-debug }}
-      ZLIB_STATICLIB: zlib.lib
-      ZLIB_STATICLIB_PDB: zlib.pdb
+      ZLIB_STATIC: ${{ matrix.zlib-static }}
 
     strategy:
       matrix:
@@ -143,7 +133,11 @@ jobs:
          - build-platform: Win32
            vcvars-args: x86
          - build-config: Debug
-           nmake-debug: DEBUG=1
+           zlib-implib: zlibd
+           zlib-static: zlibstaticd
+         - build-config: Release
+           zlib-implib: zlib
+           zlib-static: zlibstatic
 
     steps:
     - name: Download patched source
@@ -157,38 +151,45 @@ jobs:
         7z x zLib-patched-source.zip
 
     - name: Build zLib
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-      working-directory: ${{ env.ZLIB_DNAME }}
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG%
+        call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
+        cmake -S . -B build/${{ matrix.build-platform }} -A ${{ matrix.build-platform }} -DZLIB_BUILD_EXAMPLES=OFF
+        cmake --build build/${{ matrix.build-platform }} --config ${{ matrix.build-config }}
 
-    - name: Collect build artifacts
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
+    - name: Install zLib
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        mkdir "lib\%PLATFORM%\%CONFIG%"
-        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB%" "lib\%PLATFORM%\%CONFIG%\"
-        copy /Y "${{ env.ZLIB_DNAME }}\%ZLIB_STATICLIB_PDB%" "lib\%PLATFORM%\%CONFIG%\"
+        call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
+        cmake --install build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --prefix install/${{ matrix.build-platform }}/${{ matrix.build-config }}
 
+      # delete the import library because we are not packaging bin/zlib[d].dll files
     - name: Clean-up
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-      working-directory: ${{ env.ZLIB_DNAME }}
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        call "${{ env.VCVARSALL }}" %VCVARS_ARGS%
-        nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI %NMAKE_DEBUG% clean
+        call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
+        cmake --build build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --target clean
+
+        del /Q install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\${{ matrix.zlib-implib }}.lib
 
       #
       # Collect build artifacts in a way that we can just download them
-      # right into the Nuget package staging area.
+      # right into the corresponding folders in the Nuget package staging
+      # area.
       #
     - name: Upload zLib ${{ matrix.build-platform }}/${{ matrix.build-config }}
       uses: actions/upload-artifact@v4
       with:
         name: zLib-${{ matrix.build-platform }}-${{ matrix.build-config }}
-        path: lib\
+        path: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\
+
+    - name: Upload zLib include files
+      uses: actions/upload-artifact@v4
+      # include files are the same for all platforms and configurations, so just copy those from x64/Release
+      if: ${{ matrix.build-platform == 'x64' && matrix.build-config == 'Release' }}
+      with:
+        name: zLib-include
+        path: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\include\
 
   package-zLib:
     name: Package zLib
@@ -210,44 +211,40 @@ jobs:
         7z x zLib-patched-source.zip
 
     - name: Copy license
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
       run: |
         mkdir nuget\licenses
-        copy ${{ env.ZLIB_DNAME }}\LICENSE nuget\licenses\LICENSE.txt
-
-    - name: Copy header files
-      env:
-        ZLIB_DNAME: zlib-${{ env.PKG_VER }}
-      run: |
-        mkdir nuget\build\native\include
-        copy ${{ env.ZLIB_DNAME }}\zlib.h nuget\build\native\include\
-        copy ${{ env.ZLIB_DNAME }}\zconf.h nuget\build\native\include\
+        copy zlib-${{ env.PKG_VER }}\LICENSE nuget\licenses\LICENSE.txt
 
       # each download below expects build artifacts to be in their staging directories
     - name: Download zLib x64/Debug
       uses: actions/download-artifact@v4
       with:
         name: zLib-x64-Debug
-        path: nuget\build\native\lib
+        path: nuget\build\native\lib\x64\Debug
 
     - name: Download zLib x64/Release
       uses: actions/download-artifact@v4
       with:
         name: zLib-x64-Release
-        path: nuget\build\native\lib
+        path: nuget\build\native\lib\x64\Release
 
     - name: Download zLib Win32/Debug
       uses: actions/download-artifact@v4
       with:
         name: zLib-Win32-Debug
-        path: nuget\build\native\lib
+        path: nuget\build\native\lib\Win32\Debug
 
     - name: Download zLib Win32/Release
       uses: actions/download-artifact@v4
       with:
         name: zLib-Win32-Release
-        path: nuget\build\native\lib
+        path: nuget\build\native\lib\Win32\Release
+
+    - name: Download zLib include
+      uses: actions/download-artifact@v4
+      with:
+        name: zLib-include
+        path: nuget\build\native\include
 
       # this is an unconventional use of the pre-release version - see README.md
     - name: Make CI Nuget package

@@ -21,8 +21,6 @@ Do not install this package if your projects use debug configurations
 without UseDebugLibraries. Note that CMake-generated Visual Studio
 projects will not emit this property.
 
-The static library is built with the stdcall calling convention.
-
-The non-debug versions of the library are built with NDEBUG
-defined, so assert calls work as intended for Debug and Release
-configurations.
+The static library is built with the `__stdcall` calling convention,
+which allows projects building against this library to use any
+calling convention.

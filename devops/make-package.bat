@@ -17,9 +17,9 @@ set ZLIB_DNAME=zlib-%PKG_VER%
 rem zLib's original signature for .zip is available on zlib.net
 set ZLIB_SHA256=72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17
 
-set PATCH=c:\Program Files\Git\usr\bin\patch.exe
-set SEVENZIP_EXE=c:\Program Files\7-Zip\7z.exe
-set VCVARSALL=C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall
+set PATCH=%PROGRAMFILES%\Git\usr\bin\patch.exe
+set SEVENZIP_EXE=%PROGRAMFILES%\7-Zip\7z.exe
+set VCVARSALL=%PROGRAMFILES%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall
 
 if NOT EXIST %ZLIB_FNAME% (
   curl --location --output %ZLIB_FNAME% https://github.com/madler/zlib/releases/download/v%PKG_VER%/%ZLIB_FNAME%
@@ -40,72 +40,56 @@ rem
 rem Patch the source to generate debug symbols for all builds and
 rem make sure dynamic MSVC CRT is used.
 rem
-"%PATCH%" -p 1 --unified --input ..\patches\Makefile.msc.patch
+"%PATCH%" --strip 1 --unified --binary --input ..\patches\cmake-install-prefix.patch
 
 mkdir ..\nuget\licenses
 copy LICENSE ..\nuget\licenses\LICENSE.txt
 
 rem
-rem Header files (see ZLIB_PUBLIC_HDRS in CMakeLists.txt)
+rem Build Win32 artifacts
 rem
-mkdir ..\nuget\build\native\include
-copy zlib.h ..\nuget\build\native\include\
-copy zconf.h ..\nuget\build\native\include\
-
-rem
-rem Keep using nmake while it is available in the source package,
-rem because CMake-generated output requires even more patching,
-rem as we would need to enable PDBs for release builds, rename
-rem libraries and change install to collect different platforms
-rem and configurations, which are not set up well in CMakeLists.txt
-rem (e.g. install prefix must be specified when build scripts
-rem are generated, so there's no way to collect installed files
-rem per configuration, etc).
-rem
-
-rem
-rem x86 Debug
-rem 
-
 call "%VCVARSALL%" x86
 
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
+cmake -S . -B build/Win32 -A Win32 -DZLIB_BUILD_EXAMPLES=OFF
+
+cmake --build build/Win32 --config Debug
+cmake --build build/Win32 --config Release
+
+cmake --install build/Win32 --config Debug --prefix install/Win32/Debug
+cmake --install build/Win32 --config Release --prefix install/Win32/Release
 
 call ..\devops\copy-config Win32 Debug
-
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
-
-rem
-rem x86 Release
-rem 
-
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
-
 call ..\devops\copy-config Win32 Release
 
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
+cmake --build build/Win32 --config Debug --target clean
+cmake --build build/Win32 --config Release --target clean
 
 rem
-rem x64 Debug
-rem 
+rem Build x64 artifacts
+rem
 
 call "%VCVARSALL%" x64
 
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1
+cmake -S . -B build/x64 -A x64 -DZLIB_BUILD_EXAMPLES=OFF
+
+cmake --build build/x64 --config Debug
+cmake --build build/x64 --config Release
+
+cmake --install build/x64 --config Debug --prefix install/x64/Debug
+cmake --install build/x64 --config Release --prefix install/x64/Release
 
 call ..\devops\copy-config x64 Debug
-
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI DEBUG=1 clean
-
-rem
-rem x64 Release
-rem 
-
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI
-
 call ..\devops\copy-config x64 Release
 
-nmake -f win32\Makefile.msc LOC=-DZLIB_WINAPI clean
+cmake --build build/x64 --config Debug --target clean
+cmake --build build/x64 --config Debug --target clean
+
+rem
+rem Copy header files (same across all builds)
+rem
+mkdir ..\nuget\build\native\include
+copy install\x64\Release\include\zlib.h ..\nuget\build\native\include\
+copy install\x64\Release\include\zconf.h ..\nuget\build\native\include\
 
 cd ..
 
