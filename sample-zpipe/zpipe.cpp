@@ -11,6 +11,7 @@
    1.4  11 Dec 2005  Add hack to avoid MSDOS end-of-line conversions
                      Avoid some compiler warnings for input and output buffers
  */
+#include "applib/applib.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -195,6 +196,16 @@ int main(int argc, char **argv)
         if (ret != Z_OK)
             zerr(ret);
         return ret;
+    }
+
+    else if (argc == 3 && strcmp(argv[1], "-t") == 0) {
+        std::string str(argv[2]);
+        std::tuple<std::unique_ptr<const unsigned char>, size_t, size_t> compressed = applib_compress(str);
+
+        printf("round trip: %s (original: %zi, compressed: %zi, ratio: %.0lf%%)\n",
+                                    applib_uncompress(std::move(compressed)).c_str(),
+                                    std::get<2>(compressed), std::get<1>(compressed),
+                                    (100. / std::get<2>(compressed)) * std::get<1>(compressed));
     }
 
     /* otherwise, report usage */

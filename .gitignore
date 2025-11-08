@@ -1,6 +1,9 @@
 # Visual Studio files
 /.vs/
 
+# Visual Studio user-level settings
+*.vcxproj.user
+
 # downloaded zLib package file
 /zlib*.zip
 
@@ -20,3 +23,5 @@
 /sample-zpipe/packages/
 /sample-zpipe/Win32/
 /sample-zpipe/x64/
+/sample-zpipe/applib/Win32/
+/sample-zpipe/applib/x64/
