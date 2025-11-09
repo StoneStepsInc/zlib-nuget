@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework">
+	<Rule Name="StoneStepsInc" PageTemplate="tool" DisplayName="ZLib Settings" SwitchPrefix="/" Order="1">
+		<Rule.Categories>
+			<Category Name="cpp" DisplayName="ZLib" />
+		</Rule.Categories>
+		<Rule.DataSource>
+			<DataSource Persistence="ProjectFile" ItemType="" />
+		</Rule.DataSource>
+		<EnumProperty Name="StoneStepsInc_ZLib_Embed" DisplayName="Embed in output library" Category="cpp" Default="SymbolsOnly">
+			<EnumValue Name="SymbolsOnly"  DisplayName="SymbolsOnly" Description="Only references the symbols of ZLib, without including definitions"/>
+			<EnumValue Name="FullyEmbed" DisplayName="FullyEmbed" Description="Embed all code from ZLib into the output target"/>
+		</EnumProperty>
+	</Rule>
+</ProjectSchemaDefinitions>

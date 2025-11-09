@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<ItemGroup Condition="$(ConfigurationType)=='StaticLibrary'">
-		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)\LinkSettings.xml" />
+	<ItemGroup Condition="'$(ConfigurationType)' == 'StaticLibrary'">
+		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)\Settings.xml" />
 	</ItemGroup>
   <!-- 
   For static library projects, Visual Studio merges additional static
@@ -10,7 +10,7 @@
   hard to troubleshoot. Avoid adding packaged static libraries into
   projects that generate their own static libraries.
   -->
-  <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary' OR '$(StoneStepsInc_ZLib_LinkMethod)' == 'Inline'">
+  <ItemGroup Condition="'$(ConfigurationType)' != 'StaticLibrary' OR '$(StoneStepsInc_ZLib_Embed)' == 'FullyEmbed'">
     <!--
     Both libraries will appear in the Visual Studio project, but only
     one of them will be included in the build, based on whether the
