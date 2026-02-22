@@ -15,7 +15,7 @@ listed above. There are no dynamic libraries included.
 
 The zLib static libraries from this package will appear in the
 installation target project after the package is installed.
-The solution may need to be reloaded to make libraries visible.
+The solution may need to be reloaded to make these libraries visible.
 Both debug and release libraries will be listed in the project,
 but only the one appropriate for the currently selected
 configuration will be included in the build. These libraries
@@ -49,12 +49,13 @@ or via a GitHub workflow. In each case, the following steps are taken.
   * The zLib source archive is downloaded from zLib's website and
     its SHA-256 signature is verified.
 
-  * zLib's `Makefile.msc` is patched up to build debug libraries
-    using the debug CRT. See the _What's Debug CRT_ section for
-    more details.
+  * zLib's `CMakeLists.txt` is patched up to build with the
+    `ZLIB_WINAPI` calling convention, which translates into
+    `__stdcall` after the macro expansion.
 
   * VS2022 Community Edition is used to build zLib libraries
-    locally and Enterprise Edition is used to build libraries on GitHub.
+    locally and Enterprise Edition is used to build libraries on
+    GitHub.
 
   * Build artifacts for all platforms and configurations are
     collected in staging directories under `nuget/build/native/lib`.
