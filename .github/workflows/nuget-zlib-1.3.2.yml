@@ -117,11 +117,6 @@ jobs:
     name: Build zLib
     needs: [prep-zLib-source]
     runs-on: windows-2022
-    env:
-      PLATFORM: ${{ matrix.build-platform }}
-      CONFIG: ${{ matrix.build-config }}
-      VCVARS_ARGS: ${{ matrix.vcvars-args }}
-      ZLIB_STATIC: ${{ matrix.zlib-static }}
 
     strategy:
       matrix:
@@ -169,7 +164,7 @@ jobs:
     - name: Copy compatible zLib
       working-directory: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
       run: |
-        copy /Y ${{ zlib-static }}.lib ${{ zlib-static-compat }}.lib
+        copy /Y ${{ matrix.zlib-static }}.lib ${{ matrix.zlib-static-compat }}.lib
 
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
