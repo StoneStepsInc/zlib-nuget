@@ -161,7 +161,7 @@ jobs:
         cmake --install build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --prefix install/${{ matrix.build-platform }}/${{ matrix.build-config }}
 
       # zLib static library name changed from zlibstatic[d].lib to zs[d].lib
-    - name: Copy compatibility zLib
+    - name: Create compatibility zLib
       working-directory: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
       run: |
         copy /Y ${{ matrix.zlib-static }}.lib ${{ matrix.zlib-static-compat }}.lib
@@ -181,7 +181,11 @@ jobs:
       #
       # Collect build artifacts in a way that we can just download them
       # right into the corresponding folders in the Nuget package staging
-      # area.
+      # area. Name specific files to avoid picking up other files (CMake
+      # and pkgconfig). Note that with multiple paths GitHub will find
+      # the common ancestor and use it as a base for all files, which
+      # in this case is the lib directory, so it will be a flat archive,
+      # suitable for the Nuget package staging.
       #
     - name: Upload zLib ${{ matrix.build-platform }}/${{ matrix.build-config }}
       uses: actions/upload-artifact@v4

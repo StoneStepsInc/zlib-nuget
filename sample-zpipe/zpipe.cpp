@@ -213,4 +213,6 @@ int main(int argc, char **argv)
         fputs("zpipe usage: zpipe [-d] < source > dest\n", stderr);
         return 1;
     }
+
+    return 0;
 }

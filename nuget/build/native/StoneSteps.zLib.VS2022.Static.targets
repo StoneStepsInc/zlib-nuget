@@ -27,7 +27,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>$(ZLibDir)include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <!-- Define ZLIB_WINAPI to make sure function calls are generated with the same calling convention as those in zlib.lib -->
+      <!-- Define ZLIB_WINAPI to make sure function calls are generated with the same calling convention as those in zs.lib -->
       <PreprocessorDefinitions>ZLIB_WINAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
