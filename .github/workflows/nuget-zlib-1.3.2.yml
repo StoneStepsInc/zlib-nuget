@@ -47,7 +47,7 @@ on:
 # adding or removing files, changing any text in README files, etc.
 #
 env:
-  PKG_VER: '1.3.1'
+  PKG_VER: '1.3.2'
   # used only if upstream version lacks the patch component; should be commented out otherwise (see README.md)
   #PKG_VER_PATCH: '.0'
   PKG_REV: '1'
@@ -58,9 +58,9 @@ env:
   # means that in order to reference the zLib source directory we
   # need to concatenate variables in-place (e.g. `zlib-${{ env.PKG_VER }}`).
   #
-  ZLIB_FNAME: 'zlib131.zip'
+  ZLIB_FNAME: 'zlib-1.3.2.tar.gz '
   # zLib's original signature for .zip is available on zlib.net
-  ZLIB_SHA256: '72af66d44fcc14c22013b46b814d5d2514673dda3d115e64b690c1ad636e7b17'
+  ZLIB_SHA256: 'bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16'
 
   # for VS Community Edition, replace `Enterprise` with `Community` in the path
   VCVARSALL: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall'
@@ -93,14 +93,14 @@ jobs:
 
     - name: Extract zLib
       run: |
-        7z x ${{ env.ZLIB_FNAME }}
+        tar -xzf ${{ env.ZLIB_FNAME }}
 
       # GitHub won't allow disabling CRLF normalization and mangles the patch with CRLFs, which fails with --binary, which in this case is desired (a warning will be issued)
     - name: Patch source
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
         PATH %PATH:C:\Strawberry\c\bin;=%
-        patch --strip 1 --unified --input ..\patches\cmake-install-prefix.patch
+        patch --strip 1 --unified --input ..\patches\cmake-stdcall.patch
 
       # uploading a single artifact file works faster for subsequent downloads
     - name: Archive patched source
@@ -126,18 +126,20 @@ jobs:
     strategy:
       matrix:
        build-platform: [x64, Win32]
-       build-config: [Debug, Release]
+       build-config: [Debug, RelWithDebInfo]
        include:
          - build-platform: x64
            vcvars-args: x64
          - build-platform: Win32
            vcvars-args: x86
          - build-config: Debug
-           zlib-implib: zlibd
-           zlib-static: zlibstaticd
-         - build-config: Release
-           zlib-implib: zlib
-           zlib-static: zlibstatic
+           zlib-implib: zd
+           zlib-static: zsd
+           zlib-static-compat: zstaticd
+         - build-config: RelWithDebInfo
+           zlib-implib: z
+           zlib-static: zs
+           zlib-static-compat: zstatic
 
     steps:
     - name: Download patched source
@@ -154,7 +156,7 @@ jobs:
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
         call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
-        cmake -S . -B build/${{ matrix.build-platform }} -A ${{ matrix.build-platform }} -DZLIB_BUILD_EXAMPLES=OFF
+        cmake -S . -B build/${{ matrix.build-platform }} -A ${{ matrix.build-platform }} -DZLIB_BUILD_TESTING=OFF -DZLIB_BUILD_SHARED=OFF
         cmake --build build/${{ matrix.build-platform }} --config ${{ matrix.build-config }}
 
     - name: Install zLib
@@ -163,14 +165,17 @@ jobs:
         call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
         cmake --install build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --prefix install/${{ matrix.build-platform }}/${{ matrix.build-config }}
 
-      # delete the import library because we are not packaging bin/zlib[d].dll files
+      # zLib static library name changed from zstatic[d].lib to zs[d].lib
+    - name: Copy compatible zLib
+      working-directory: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
+      run: |
+        copy /Y ${{ zlib-static }}.lib ${{ zlib-static-compat }}.lib
+
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
         call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
         cmake --build build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --target clean
-
-        del /Q install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\${{ matrix.zlib-implib }}.lib
 
       #
       # Collect build artifacts in a way that we can just download them
@@ -225,7 +230,7 @@ jobs:
     - name: Download zLib x64/Release
       uses: actions/download-artifact@v4
       with:
-        name: zLib-x64-Release
+        name: zLib-x64-RelWithDebInfo
         path: nuget\build\native\lib\x64\Release
 
     - name: Download zLib Win32/Debug
@@ -237,7 +242,7 @@ jobs:
     - name: Download zLib Win32/Release
       uses: actions/download-artifact@v4
       with:
-        name: zLib-Win32-Release
+        name: zLib-Win32-RelWithDebInfo
         path: nuget\build\native\lib\Win32\Release
 
     - name: Download zLib include

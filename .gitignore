@@ -5,7 +5,7 @@
 *.vcxproj.user
 
 # downloaded zLib package file
-/zlib*.zip
+/zlib*.tar.gz
 
 # extracted zLib source
 /zlib-*/
