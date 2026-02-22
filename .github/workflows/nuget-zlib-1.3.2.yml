@@ -168,9 +168,9 @@ jobs:
 
       # copy the PDB file into the installation directory
     - name: Collect PDF files
-      working-directory: zlib-${{ env.PKG_VER }}\build\${{ matrix.build-platform }}\${{ matrix.build-config }}\
+      working-directory: zlib-${{ env.PKG_VER }}
       run: |
-        copy /Y ${{ matrix.zlib-static }}.pdb zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
+        copy /Y build\${{ matrix.build-platform }}\${{ matrix.build-config }}\${{ matrix.zlib-static }}.pdb install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
 
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
