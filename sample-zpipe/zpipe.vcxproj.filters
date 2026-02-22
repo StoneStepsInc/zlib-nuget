@@ -14,4 +14,12 @@
       <UniqueIdentifier>{bb416fb0-c35b-4672-9ef4-82e26630f830}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Library Include="$(ZLibDir)lib\$(Platform)\Release\$(ZLibName).lib">
+      <Filter>lib\Release</Filter>
+    </Library>
+    <Library Include="$(ZLibDir)lib\$(Platform)\Debug\$(ZLibName)d.lib">
+      <Filter>lib\Debug</Filter>
+    </Library>
+  </ItemGroup>
 </Project>
