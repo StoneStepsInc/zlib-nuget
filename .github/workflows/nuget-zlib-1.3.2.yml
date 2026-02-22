@@ -185,8 +185,8 @@ jobs:
 
     - name: Upload zLib include files
       uses: actions/upload-artifact@v4
-      # include files are the same for all platforms and configurations, so just copy those from x64/Release
-      if: ${{ matrix.build-platform == 'x64' && matrix.build-config == 'Release' }}
+      # include files are the same for all platforms and configurations, so just copy those from x64/RelWithDebInfo
+      if: ${{ matrix.build-platform == 'x64' && matrix.build-config == 'RelWithDebInfo' }}
       with:
         name: zLib-include
         path: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\include\
