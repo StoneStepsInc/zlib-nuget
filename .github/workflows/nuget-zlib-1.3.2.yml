@@ -166,6 +166,12 @@ jobs:
       run: |
         copy /Y ${{ matrix.zlib-static }}.lib ${{ matrix.zlib-static-compat }}.lib
 
+      # copy the PDB file into the installation directory
+    - name: Collect PDF files
+      working-directory: zlib-${{ env.PKG_VER }}\build\${{ matrix.build-platform }}\${{ matrix.build-config }}\
+      run: |
+        copy /Y ${{ matrix.zlib-static }}.pdb zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
+
     - name: Clean-up
       working-directory: zlib-${{ env.PKG_VER }}
       run: |
@@ -184,7 +190,7 @@ jobs:
         path: |
           zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\${{ matrix.zlib-static }}.lib
           zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\${{ matrix.zlib-static-compat }}.lib
-          zlib-${{ env.PKG_VER }}\build\${{ matrix.build-platform }}\${{ matrix.build-config }}\${{ matrix.zlib-static }}.pdb
+          zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib\${{ matrix.zlib-static }}.pdb
 
     - name: Upload zLib include files
       uses: actions/upload-artifact@v4
