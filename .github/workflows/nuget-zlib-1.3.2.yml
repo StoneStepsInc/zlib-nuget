@@ -130,11 +130,11 @@ jobs:
          - build-config: Debug
            zlib-implib: zd
            zlib-static: zsd
-           zlib-static-compat: zstaticd
+           zlib-static-compat: zlibstaticd
          - build-config: RelWithDebInfo
            zlib-implib: z
            zlib-static: zs
-           zlib-static-compat: zstatic
+           zlib-static-compat: zlibstatic
 
     steps:
     - name: Download patched source
@@ -160,8 +160,8 @@ jobs:
         call "${{ env.VCVARSALL }}" ${{ matrix.vcvars-args }}
         cmake --install build/${{ matrix.build-platform }} --config ${{ matrix.build-config }} --prefix install/${{ matrix.build-platform }}/${{ matrix.build-config }}
 
-      # zLib static library name changed from zstatic[d].lib to zs[d].lib
-    - name: Copy compatible zLib
+      # zLib static library name changed from zlibstatic[d].lib to zs[d].lib
+    - name: Copy compatibility zLib
       working-directory: zlib-${{ env.PKG_VER }}\install\${{ matrix.build-platform }}\${{ matrix.build-config }}\lib
       run: |
         copy /Y ${{ matrix.zlib-static }}.lib ${{ matrix.zlib-static-compat }}.lib
