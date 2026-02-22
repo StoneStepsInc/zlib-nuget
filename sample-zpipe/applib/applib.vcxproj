@@ -173,7 +173,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>lib /OUT:$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName).lib</Command>
+      <Command>lib /OUT:$(OutDir)$(ProjectName).lib $(OutDir)$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName)d.lib</Command>
       <Message>Merges zLib into an app-level static library (disabled by default)</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -191,7 +191,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>lib /OUT:$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName).lib</Command>
+      <Command>lib /OUT:$(OutDir)$(ProjectName).lib $(OutDir)$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName)d.lib</Command>
       <Message>Merges zLib into an app-level static library (disabled by default)</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -250,7 +250,7 @@
     </Link>
     <ProjectReference />
     <PostBuildEvent>
-      <Command>lib /OUT:$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName).lib</Command>
+      <Command>lib /OUT:$(OutDir)$(ProjectName).lib $(OutDir)$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName)d.lib</Command>
       <Message>Merges zLib into an app-level static library (disabled by default)</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -269,7 +269,7 @@
     </Link>
     <ProjectReference />
     <PostBuildEvent>
-      <Command>lib /OUT:$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName).lib</Command>
+      <Command>lib /OUT:$(OutDir)$(ProjectName).lib $(OutDir)$(ProjectName).lib $(ZLibDir)lib\$(Platform)\$(Configuration)\$(zLibName)d.lib</Command>
       <Message>Merges zLib into an app-level static library (disabled by default)</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
@@ -318,6 +318,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="applib.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

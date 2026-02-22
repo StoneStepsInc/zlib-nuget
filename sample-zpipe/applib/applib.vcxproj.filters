@@ -6,4 +6,7 @@
   <ItemGroup>
     <ClInclude Include="applib.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
 </Project>
